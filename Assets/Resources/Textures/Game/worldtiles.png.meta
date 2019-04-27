@@ -26,6 +26,36 @@ TextureImporter:
   - first:
       213: -9123399517817655657
     second: worldtiles_7
+  - first:
+      213: -718813246599627253
+    second: worldtiles_8
+  - first:
+      213: -1231771350071621655
+    second: worldtiles_9
+  - first:
+      213: 3475675293732571229
+    second: worldtiles_10
+  - first:
+      213: -7478537667008570510
+    second: worldtiles_11
+  - first:
+      213: 8998832664322537407
+    second: worldtiles_12
+  - first:
+      213: -8850043286043672903
+    second: worldtiles_13
+  - first:
+      213: 6584348321008361682
+    second: worldtiles_14
+  - first:
+      213: -314836298194027335
+    second: worldtiles_15
+  - first:
+      213: -4025085865537292638
+    second: worldtiles_16
+  - first:
+      213: -8516308002884892650
+    second: worldtiles_17
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -133,7 +163,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 184810e60cf903448b9936be230c6ea0
+      spriteID: a7017131ab29fcb498aac1aa66c6cba4
       internalID: -5051611091296416433
       vertices: []
       indices: 
@@ -154,7 +184,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b8819752826cf5b45bae8bba3e851073
+      spriteID: 1705010606ea5804dab3fdbc09a78095
       internalID: -8385473177702363886
       vertices: []
       indices: 
@@ -175,7 +205,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1afe2d8d550296e499cd30c1d45f194d
+      spriteID: 693c9d4b5b68f0342aacf9cc54d132ff
       internalID: -1514773972527737136
       vertices: []
       indices: 
@@ -196,7 +226,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7ae2b31940be0864e937e6f97ca46d42
+      spriteID: 02881d0c2a67ccf4fa4757a474c27dd1
       internalID: -7567157515002710617
       vertices: []
       indices: 
@@ -217,7 +247,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7dc2c1c7d681d19409fac210750aaa63
+      spriteID: 147ebe58f1736354a8f1a887a572211d
       internalID: -5457318157289423094
       vertices: []
       indices: 
@@ -238,7 +268,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 80691d9ed7392954aa77d03c56cfddb1
+      spriteID: 0a565dfe5dd3ea94d884d860d4a56e72
       internalID: -1181598760678490843
       vertices: []
       indices: 
@@ -259,7 +289,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fdf4d21cf926eda4db0a193a9fc20e8c
+      spriteID: 8194dad159189f041b5edcc907e6a2c6
       internalID: 1622601008559960371
       vertices: []
       indices: 
@@ -280,8 +310,218 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 08a3c2fcb993bc249ad690902a8eaa5f
+      spriteID: 34e2b6334a223b547917b5c094f777c9
       internalID: -9123399517817655657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_8
+      rect:
+        serializedVersion: 2
+        x: 128
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f75f03da0515044fba48eeaf758b7c5
+      internalID: -718813246599627253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_9
+      rect:
+        serializedVersion: 2
+        x: 144
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24d03cff7321bc04f81263b12fc034ab
+      internalID: -1231771350071621655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_10
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f6c7304c010ab44cbe413f81c8911ca
+      internalID: 3475675293732571229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_11
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b75cc6a4bf35ae4da19d3fbfdd0c199
+      internalID: -7478537667008570510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_12
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93db4a418822d8f4289e2f84b60bf2cc
+      internalID: 8998832664322537407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_13
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec92688598725304582535f65ebcff4f
+      internalID: -8850043286043672903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_14
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e38be7daaa8fdc4ab73e143238c8b2e
+      internalID: 6584348321008361682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_15
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 16
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffe947a42e5efcc4a850da06103d9762
+      internalID: -314836298194027335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_16
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a326007ba7079c45ae9dc7a75e8604d
+      internalID: -4025085865537292638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: worldtiles_17
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f140a0a4afa9e7f4fb3967f579434100
+      internalID: -8516308002884892650
       vertices: []
       indices: 
       edges: []

@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parserColor: {r: 0, g: 0, b: 0, a: 1}
   prefab: {fileID: 5887408215204105217, guid: 04ffb2eef97000f4889c7844c7d58e69, type: 3}
+  help: 'Steel tile: cannot be moved nor be destroyed'
   obstacle: 1
   robotSpawn: 0
   health: 0

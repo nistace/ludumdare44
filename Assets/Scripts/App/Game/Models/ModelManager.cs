@@ -24,6 +24,14 @@ public class ModelManager : MonoBehaviour
 		return GetPooledOrNew<WorldTileModel, WorldTile>(worldTile.type.prefab, worldTile);
 	}
 
+	public static RobotModel CreateModel(Robot robot)
+	{
+		RobotModel model = GetPooledOrNew<RobotModel, Robot>(robot.type.prefab, robot);
+		model.spriteRenderer.color = robot.color;
+		return model;
+	}
+
+
 	public static void DestroyModel<E>(Model<E> model)
 	{
 		if (!model) return;

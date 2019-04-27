@@ -14,6 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   parserColor: {r: 1, g: 1, b: 1, a: 1}
   prefab: {fileID: 5978234770656128221, guid: 7949e0786e2c0c24ebcce60ce23fa721, type: 3}
-  obstacle: 0
+  help: 'Spawn position: select a robot and click here to assign it to the next execution'
+  obstacleType: 1
   robotSpawn: 1
   health: 0
+  reward: 0
+  objective: 0
