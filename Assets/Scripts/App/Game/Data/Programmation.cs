@@ -13,7 +13,7 @@ public static class Programmation
 
 	public enum ConditionType
 	{
-		empty, obstacle, robot
+		empty, obstacle, robot, anything
 	}
 
 	public enum Operation
@@ -23,9 +23,9 @@ public static class Programmation
 
 	public class Instruction
 	{
-		public ConditionDirection conditionDirection { get; set; }
-		public ConditionType conditionType { get; set; }
-		public Operation operation { get; set; }
+		public ConditionDirection conditionDirection { get; set; } = ConditionDirection.right;
+		public ConditionType conditionType { get; set; } = ConditionType.empty;
+		public Operation operation { get; set; } = Operation.moveRight;
 
 		public override string ToString()
 		{
@@ -48,6 +48,7 @@ public static class Programmation
 				case ConditionType.empty: str.Append("empty"); break;
 				case ConditionType.obstacle: str.Append("an obstacle"); break;
 				case ConditionType.robot: str.Append("a robot"); break;
+				case ConditionType.anything: str.Append("not empty"); break;
 			}
 			str.Append(", the robot ");
 			switch (this.operation)

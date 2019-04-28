@@ -21,4 +21,13 @@ public class SelectDirectionPanel : SelectSomethingPanel<Programmation.Condition
 	public void SelectDownRight() { this.SelectOption(Programmation.ConditionDirection.bottomright); }
 	public void SelectDown() { this.SelectOption(Programmation.ConditionDirection.bottom); }
 	public void SelectRight() { this.SelectOption(Programmation.ConditionDirection.right); }
+
+	public void HelpTopLeft() { GameController.instance.SetHelpMessage("Check the tile above the robot, on the left"); }
+	public void HelpTopRight() { GameController.instance.SetHelpMessage("Check the tile above the robot, on the right"); }
+	public void HelpTop() { GameController.instance.SetHelpMessage("Check the tile above the robot"); }
+	public void HelpLeft() { GameController.instance.SetHelpMessage("Check the tile on the left of the robot"); }
+	public void HelpDown() { GameController.instance.SetHelpMessage("Check the tile under the robot"); }
+	public void HelpDownLeft() { GameController.instance.SetHelpMessage("Check the tile under the robot, on the left"); }
+	public void HelpDownRight() { GameController.instance.SetHelpMessage("Check the tile under the robot, on the right"); }
+	public void HelpRight() { GameController.instance.SetHelpMessage("Check the tile on the right the robot"); }
 }

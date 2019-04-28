@@ -14,7 +14,7 @@ public class SelectSomethingPanel<E> : MonoBehaviour
 
 	private Action<E> callback;
 
-	public void Open(Action<E> callback)
+	public virtual void Open(Action<E> callback)
 	{
 		this.callback = callback;
 		this.gameObject.SetActive(true);

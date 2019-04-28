@@ -248,109 +248,120 @@ public class GameController : MonoBehaviour
 			for (int i = 0; Game.current.status == Game.Status.Playing && Game.current.remainingObjectives > 0 && i < Game.current.world.robotsInWorld.Count; ++i)
 			{
 				Robot robot = Game.current.world.robotsInWorld[i];
-				Programmation.Operation robotOperation = this.EvalRobotOperation(robot);
-				if (robotOperation == Programmation.Operation.nothing)
+				if (!Game.current.turnDestroyedRobots.Contains(robot))
 				{
-
-				}
-				else if (robotOperation == Programmation.Operation.special)
-				{
-
-				}
-				else
-				{
-					Vector2Int direction = Vector2Int.zero;
-					switch (robotOperation)
+					Programmation.Operation robotOperation = this.EvalRobotOperation(robot);
+					if (robotOperation == Programmation.Operation.nothing)
 					{
-						case Programmation.Operation.moveLeft: direction = Vector2Int.left; break;
-						case Programmation.Operation.moveRight: direction = Vector2Int.right; break;
-						case Programmation.Operation.moveBottom: direction = Vector2Int.down; break;
-						case Programmation.Operation.moveTop: direction = Vector2Int.up; break;
+
 					}
-					if (this.CheckMovement(robot, direction, out List<Robot> movingRobots, out List<WorldTile> movingTileObjects))
+					else if (robotOperation == Programmation.Operation.special)
 					{
-						Game.current.somethingHappenedThisTurn = true;
-						bool movementEnded = false;
-						Vector3 movement = Vector2.zero;
-						Vector3 movementSpeedVector = new Vector3(direction.x * Game.current.movementSpeed, direction.y * Game.current.movementSpeed, 0);
-						while (!movementEnded)
+
+					}
+					else
+					{
+						Vector2Int direction = Vector2Int.zero;
+						switch (robotOperation)
 						{
-							yield return null;
-							Vector3 frameMovement = GameTime.deltaTime * movementSpeedVector;
-							if ((movement + frameMovement).sqrMagnitude > 1)
-							{
-								movementEnded = true;
-							}
-							else
-							{
-								movement += frameMovement;
-								foreach (Robot r in movingRobots) this.robotModels[r].transform.position += frameMovement;
-								foreach (WorldTile t in movingTileObjects) this.tileObjectModels[t].transform.position += frameMovement;
-							}
+							case Programmation.Operation.moveLeft: direction = Vector2Int.left; break;
+							case Programmation.Operation.moveRight: direction = Vector2Int.right; break;
+							case Programmation.Operation.moveBottom: direction = Vector2Int.down; break;
+							case Programmation.Operation.moveTop: direction = Vector2Int.up; break;
 						}
-						this.EndMovement(direction, movingRobots, movingTileObjects);
+						if (this.CheckMovement(robot, direction, out List<Robot> movingRobots, out List<WorldTile> movingTileObjects))
+						{
+							Game.current.somethingHappenedThisTurn = true;
+							bool movementEnded = false;
+							Vector3 movement = Vector2.zero;
+							Vector3 movementSpeedVector = new Vector3(direction.x * Game.current.movementSpeed, direction.y * Game.current.movementSpeed, 0);
+							while (!movementEnded)
+							{
+								yield return null;
+								Vector3 frameMovement = GameTime.deltaTime * movementSpeedVector;
+								if ((movement + frameMovement).sqrMagnitude > 1)
+								{
+									movementEnded = true;
+								}
+								else
+								{
+									movement += frameMovement;
+									foreach (Robot r in movingRobots) this.robotModels[r].transform.position += frameMovement;
+									foreach (WorldTile t in movingTileObjects) this.tileObjectModels[t].transform.position += frameMovement;
+								}
+							}
+							this.EndMovement(direction, movingRobots, movingTileObjects);
+						}
+
 					}
 
-				}
-
-				// Gravity
-				List<WorldTile> fallingItems = new List<WorldTile>();
-				List<Robot> fallingRobots = new List<Robot>();
-				do
-				{
-					fallingItems.Clear();
-					fallingRobots.Clear();
-					for (int j = 0; j < Game.current.world.width; ++j)
+					// Gravity
+					List<WorldTile> fallingItems = new List<WorldTile>();
+					List<Robot> fallingRobots = new List<Robot>();
+					do
 					{
-						for (int k = 0; k < Game.current.world.height; ++k)
+						fallingItems.Clear();
+						fallingRobots.Clear();
+						for (int j = 0; j < Game.current.world.width; ++j)
 						{
-							if (Game.current.world.tiles[j, k].Count > 0)
+							for (int k = 0; k < Game.current.world.height; ++k)
 							{
-								if (k == 0 ||
-									(!Game.current.world.tiles[j, k - 1].Any(t => t.type.obstacleType == WorldTileType.ObstacleType.Fixed || t.type.obstacleType == WorldTileType.ObstacleType.Push && !fallingItems.Contains(t))
-									&& !Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k - 1 && !fallingRobots.Contains(t))))
+								if (Game.current.world.tiles[j, k].Count > 0 || Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k))
 								{
-									fallingItems.AddRange(Game.current.world.tiles[j, k].Where(t => t.type.gravity));
-									fallingRobots.AddRange(Game.current.world.robotsInWorld.Where(t => t.xInLevel == j && t.yInLevel == k - 1));
+									if (k == 0 ||
+										(!Game.current.world.tiles[j, k - 1].Any(t => t.type.obstacleType == WorldTileType.ObstacleType.Fixed || t.type.obstacleType == WorldTileType.ObstacleType.Push && !fallingItems.Contains(t))
+										&& !Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k - 1 && !fallingRobots.Contains(t))))
+									{
+										fallingItems.AddRange(Game.current.world.tiles[j, k].Where(t => t.type.gravity));
+										fallingRobots.AddRange(Game.current.world.robotsInWorld.Where(t => t.xInLevel == j && t.yInLevel == k));
+									}
 								}
 							}
 						}
-					}
-					if (fallingItems.Count > 0 || fallingRobots.Count > 0)
-					{
-						Game.current.somethingHappenedThisTurn = true;
-						bool movementEnded = false;
-						Vector3 movement = Vector2.zero;
-						Vector3 movementSpeedVector = Vector3.down * Game.current.movementSpeed;
-						while (!movementEnded)
+						if (fallingItems.Count > 0 || fallingRobots.Count > 0)
 						{
-							yield return null;
-							Vector3 frameMovement = GameTime.deltaTime * movementSpeedVector;
-							if ((movement + frameMovement).sqrMagnitude > 1)
+							Game.current.somethingHappenedThisTurn = true;
+							bool movementEnded = false;
+							Vector3 movement = Vector2.zero;
+							Vector3 movementSpeedVector = Vector3.down * Game.current.fallSpeed;
+							while (!movementEnded)
 							{
-								movementEnded = true;
+								yield return null;
+								Vector3 frameMovement = GameTime.deltaTime * movementSpeedVector;
+								if ((movement + frameMovement).sqrMagnitude > 1)
+								{
+									movementEnded = true;
+								}
+								else
+								{
+									movement += frameMovement;
+									foreach (Robot r in fallingRobots) this.robotModels[r].transform.position += frameMovement;
+									foreach (WorldTile t in fallingItems) this.tileObjectModels[t].transform.position += frameMovement;
+								}
 							}
-							else
-							{
-								movement += frameMovement;
-								foreach (Robot r in fallingRobots) this.robotModels[r].transform.position += frameMovement;
-								foreach (WorldTile t in fallingItems) this.tileObjectModels[t].transform.position += frameMovement;
-							}
+							this.EndMovement(Vector2Int.down, fallingRobots, fallingItems);
 						}
-						this.EndMovement(Vector2Int.down, fallingRobots, fallingItems);
-					}
 
-				} while (fallingItems.Count + fallingRobots.Count > 0);
+					} while (fallingItems.Count + fallingRobots.Count > 0);
+				}
 			}
-			foreach (Robot robot in Game.current.turnsDestroyedRobots)
+			foreach (Robot robot in Game.current.turnDestroyedRobots)
 			{
 				Game.current.ownedRobots.Remove(robot);
 				Game.current.world.robotsInWorld.Remove(robot);
-				ModelManager.DestroyModel(this.robotModels[robot].GetComponent<RobotModel>());
+				ModelManager.DestroyModel(this.robotModels[robot]);
 				this.robotModels.Remove(robot);
 				Game.current.executionResult.lostRobots++;
 			}
-			Game.current.turnsDestroyedRobots.Clear();
+			Game.current.turnDestroyedRobots.Clear();
+			foreach (WorldTile tile in Game.current.turnDestroyedItems)
+			{
+				if (tile.worldPosition.x >= 0 && tile.worldPosition.x < Game.current.world.width && tile.worldPosition.y >= 0 && tile.worldPosition.y < Game.current.world.height)
+					Game.current.world.tiles[tile.worldPosition.x, tile.worldPosition.y].Remove(tile);
+				ModelManager.DestroyModel(this.tileObjectModels[tile]);
+				this.tileObjectModels.Remove(tile);
+			}
+			Game.current.turnDestroyedItems.Clear();
 			turnsWithNoEffect = Game.current.somethingHappenedThisTurn ? 0 : turnsWithNoEffect + 1;
 		}
 		Game.current.status = Game.Status.Played;
@@ -366,6 +377,7 @@ public class GameController : MonoBehaviour
 
 	private void EndMovement(Vector2Int direction, IEnumerable<Robot> movingRobots, IEnumerable<WorldTile> movingTileObjects)
 	{
+
 		foreach (Robot r in movingRobots)
 		{
 			r.positionInLevel = r.positionInLevel + direction;
@@ -390,6 +402,20 @@ public class GameController : MonoBehaviour
 				Game.current.world.tiles[t.worldPosition.x, t.worldPosition.y].Add(t);
 			}
 			this.tileObjectModels[t].transform.position = new Vector3(t.worldPosition.x, t.worldPosition.y, 0);
+		}
+		foreach (Robot r in movingRobots)
+		{
+			if (r.xInLevel < 0 || r.xInLevel >= Game.current.world.width || r.yInLevel < 0 || r.yInLevel >= Game.current.world.height)
+			{
+				Game.current.turnDestroyedRobots.Add(r);
+			}
+		}
+		foreach (WorldTile t in movingTileObjects)
+		{
+			if (t.worldPosition.x < 0 || t.worldPosition.x >= Game.current.world.width || t.worldPosition.y < 0 || t.worldPosition.y >= Game.current.world.height)
+			{
+				Game.current.turnDestroyedItems.Add(t);
+			}
 		}
 	}
 
@@ -438,7 +464,8 @@ public class GameController : MonoBehaviour
 			switch (instruction.conditionType)
 			{
 				case Programmation.ConditionType.empty: conditionMet = tileContent.Item1.Count == 0 && tileContent.Item2 == null; break;
-				case Programmation.ConditionType.obstacle: conditionMet = tileContent.Item1.Count > 0; break;
+				case Programmation.ConditionType.anything: conditionMet = tileContent.Item1.Count > 0 || tileContent.Item2 != null; break;
+				case Programmation.ConditionType.obstacle: conditionMet = tileContent.Item1.Any(t => t.type.obstacleType != WorldTileType.ObstacleType.WalkThrough) || tileContent.Item2 != null; break;
 				case Programmation.ConditionType.robot: conditionMet = tileContent.Item2 != null; break;
 			}
 			if (conditionMet) return instruction.operation;

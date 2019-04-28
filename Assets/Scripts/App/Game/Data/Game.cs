@@ -16,12 +16,14 @@ public class Game
 	public float funds { get; set; } = 1000;
 	public List<Robot> ownedRobots { get; } = new List<Robot>();
 	public List<Robot> purchasableRobots { get; } = new List<Robot>();
-	public float movementSpeed { get; } = 1;// tiles/second
+	public float movementSpeed { get; } = 2;// tiles/second
+	public float fallSpeed { get; } = 4;// tiles/second
 
 	/// <summary>Currennt or latest exection result</summary>
 	public ExecutionResult executionResult { get; set; }
 	public bool somethingHappenedThisTurn { get; set; }
-	public HashSet<Robot> turnsDestroyedRobots { get; } = new HashSet<Robot>();
+	public HashSet<Robot> turnDestroyedRobots { get; } = new HashSet<Robot>();
+	public HashSet<WorldTile> turnDestroyedItems { get; } = new HashSet<WorldTile>();
 
 	public Status status { get; set; }
 	public int initialObjectives { get; set; }

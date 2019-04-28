@@ -57,7 +57,7 @@ public class MyRobotoProgrammationBox : AbstractUIMonoBehaviour
 
 	public void SelectOperation()
 	{
-		SelectOperationPanel.instance.Open(this.SelectOperation);
+		SelectOperationPanel.instance.Open(this.SelectOperation, this.robot.type.helpDisplayAbility);
 	}
 
 	private void SelectOperation(Programmation.Operation type)

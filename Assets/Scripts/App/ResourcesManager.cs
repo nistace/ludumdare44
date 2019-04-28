@@ -24,6 +24,7 @@ public class ResourcesManager : MonoBehaviour
 	public Sprite contentObstacle;
 	public Sprite contentEmpty;
 	public Sprite contentRobot;
+	public Sprite contentAnything;
 
 	public Sprite actionLeft;
 	public Sprite actionRight;
@@ -52,6 +53,7 @@ public class ResourcesManager : MonoBehaviour
 		conditionTypeSprites.Add(Programmation.ConditionType.empty, this.contentEmpty);
 		conditionTypeSprites.Add(Programmation.ConditionType.obstacle, this.contentObstacle);
 		conditionTypeSprites.Add(Programmation.ConditionType.robot, this.contentRobot);
+		conditionTypeSprites.Add(Programmation.ConditionType.anything, this.contentAnything);
 
 		operationSprites.Add(Programmation.Operation.moveBottom, this.actionDown);
 		operationSprites.Add(Programmation.Operation.moveLeft, this.actionLeft);

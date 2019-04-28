@@ -11,4 +11,17 @@ public class RobotType : AbstractType
 	public GameObject prefab;
 	public Sprite icon;
 	public SpecialAbility specialAbility;
+
+	public string helpDisplayAbility
+	{
+		get
+		{
+			switch (this.specialAbility)
+			{
+				case SpecialAbility.platform: return "Extend the arm to bring the platform up";
+				case SpecialAbility.shoot: return "Shoot (on the right)";
+			}
+			return null;
+		}
+	}
 }

@@ -28,7 +28,7 @@ public class MyRobotsPanel : AbstractUIMonoBehaviour
 
 	private void RefreshList()
 	{
-		foreach (Robot toRemove in this.boxes.Keys.Where(t => !Game.current.ownedRobots.Contains(t)))
+		foreach (Robot toRemove in this.boxes.Keys.Where(t => !Game.current.ownedRobots.Contains(t)).ToList())
 		{
 			this.RemoveBox(toRemove);
 		}

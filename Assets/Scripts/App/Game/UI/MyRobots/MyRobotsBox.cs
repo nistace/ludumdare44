@@ -209,7 +209,7 @@ public class MyRobotsBox : AbstractUIMonoBehaviour
 
 	public void SelectOtherwiseOperation()
 	{
-		SelectOperationPanel.instance.Open(this.SelectOtherwiseOperation);
+		SelectOperationPanel.instance.Open(this.SelectOtherwiseOperation, this.robot.type.helpDisplayAbility);
 	}
 
 	private void SelectOtherwiseOperation(Programmation.Operation operation)
