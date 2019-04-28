@@ -40,7 +40,7 @@ public static class GameFactory
 		{
 			funds = 1000
 		};
-		game.ownedRobots.Add(CreateRobot(ResourcesManager.LoadAllTypes<RobotType>().Single(t => t.name == "Shooter")));
+		game.ownedRobots.Add(CreateRobot(ResourcesManager.LoadAllTypes<RobotType>().Single(t => t.name == "Default")));
 		return game;
 	}
 
@@ -52,8 +52,8 @@ public static class GameFactory
 		{
 			type = type,
 			maintenanceCost = type.initialMaintenanceCost,
-			
-			color = new Color(UnityEngine.Random.Range(.5f, 1), UnityEngine.Random.Range(.5f, 1), UnityEngine.Random.Range(0, .5f)),
+
+			color = new Color(UnityEngine.Random.Range(.3f, 1), UnityEngine.Random.Range(.3f, 1), UnityEngine.Random.Range(.3f, 1)),
 			name = CreateNewRobotName()
 		};
 		return robot;

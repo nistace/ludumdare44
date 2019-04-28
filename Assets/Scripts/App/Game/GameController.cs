@@ -292,6 +292,11 @@ public class GameController : MonoBehaviour
 				if (!Game.current.turnDestroyedRobots.Contains(robot))
 				{
 					Programmation.Operation robotOperation = this.EvalRobotOperation(robot);
+					if (Game.current.robotsDisablingGravity.Contains(robot) && robotOperation != Programmation.Operation.special)
+					{
+						Game.current.robotsDisablingGravity.Remove(robot);
+						this.robotModels[robot].SetSpecial(false);
+					}
 					if (robotOperation == Programmation.Operation.nothing) { }
 					else if (robotOperation == Programmation.Operation.special)
 					{
@@ -333,7 +338,31 @@ public class GameController : MonoBehaviour
 								ModelManager.DestroyBullet(bulletModel);
 								foreach (WorldTile destroyed in tileContent.Item1.Where(t => t.type.health > 0)) Game.current.turnDestroyedItems.Add(destroyed);
 								if (tileContent.Item2 != null) Game.current.turnDestroyedRobots.Add(tileContent.Item2);
-							};
+							}
+							break;
+							case RobotType.SpecialAbility.gravity:
+							{
+								Game.current.robotsDisablingGravity.Add(robot);
+								this.robotModels[robot].SetSpecial(true);
+							}
+							break;
+							case RobotType.SpecialAbility.stick:
+							{
+								robot.stickEnabled = !robot.stickEnabled;
+								this.robotModels[robot].SetSpecial(robot.stickEnabled);
+								if (robot.stickEnabled)
+								{
+									Tuple<List<WorldTile>, Robot> stickTo = this.GetTileContent(robot.positionInLevel + Vector2Int.up);
+									robot.stickRobot = stickTo.Item2;
+									robot.stickTiles.Clear();
+									robot.stickTiles.AddRange(stickTo.Item1);
+								}
+								else
+								{
+									robot.stickRobot = null;
+									robot.stickTiles.Clear();
+								}
+							}
 							break;
 						}
 					}
@@ -376,54 +405,56 @@ public class GameController : MonoBehaviour
 					this.RemoveDestroyed(ref i);
 
 					// Gravity
-					List<WorldTile> fallingItems = new List<WorldTile>();
-					List<Robot> fallingRobots = new List<Robot>();
-					do
+					if (Game.current.gravityEnabled)
 					{
-						fallingItems.Clear();
-						fallingRobots.Clear();
-						for (int j = 0; j < Game.current.world.width; ++j)
+						List<WorldTile> fallingItems = new List<WorldTile>();
+						List<Robot> fallingRobots = new List<Robot>();
+						do
 						{
-							for (int k = 0; k < Game.current.world.height; ++k)
+							fallingItems.Clear();
+							fallingRobots.Clear();
+							for (int j = 0; j < Game.current.world.width; ++j)
 							{
-								if (Game.current.world.tiles[j, k].Count > 0 || Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k))
+								for (int k = 0; k < Game.current.world.height; ++k)
 								{
-									if (k == 0 ||
-										(!Game.current.world.tiles[j, k - 1].Any(t => t.type.obstacleType == WorldTileType.ObstacleType.Fixed || t.type.obstacleType == WorldTileType.ObstacleType.Push && !fallingItems.Contains(t))
-										&& !Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k - 1 && !fallingRobots.Contains(t))))
+									if (Game.current.world.tiles[j, k].Count > 0 || Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k))
 									{
-										fallingItems.AddRange(Game.current.world.tiles[j, k].Where(t => t.type.gravity));
-										fallingRobots.AddRange(Game.current.world.robotsInWorld.Where(t => t.xInLevel == j && t.yInLevel == k));
+										if (k == 0 ||
+											(!Game.current.world.tiles[j, k - 1].Any(t => t.type.obstacleType == WorldTileType.ObstacleType.Fixed || t.type.obstacleType == WorldTileType.ObstacleType.Push && !fallingItems.Contains(t))
+											&& !Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k - 1 && !fallingRobots.Contains(t))))
+										{
+											fallingItems.AddRange(Game.current.world.tiles[j, k].Where(t => t.type.gravity));
+											fallingRobots.AddRange(Game.current.world.robotsInWorld.Where(t => t.xInLevel == j && t.yInLevel == k));
+										}
 									}
 								}
 							}
-						}
-						if (fallingItems.Count > 0 || fallingRobots.Count > 0)
-						{
-							Game.current.somethingHappenedThisTurn = true;
-							bool movementEnded = false;
-							Vector3 movement = Vector2.zero;
-							Vector3 movementSpeedVector = Vector3.down * Game.current.fallSpeed;
-							while (!movementEnded)
+							if (fallingItems.Count > 0 || fallingRobots.Count > 0)
 							{
-								yield return null;
-								Vector3 frameMovement = GameTime.deltaTime * movementSpeedVector;
-								if ((movement + frameMovement).sqrMagnitude > 1)
+								Game.current.somethingHappenedThisTurn = true;
+								bool movementEnded = false;
+								Vector3 movement = Vector2.zero;
+								Vector3 movementSpeedVector = Vector3.down * Game.current.fallSpeed;
+								while (!movementEnded)
 								{
-									movementEnded = true;
+									yield return null;
+									Vector3 frameMovement = GameTime.deltaTime * movementSpeedVector;
+									if ((movement + frameMovement).sqrMagnitude > 1)
+									{
+										movementEnded = true;
+									}
+									else
+									{
+										movement += frameMovement;
+										foreach (Robot r in fallingRobots) this.robotModels[r].transform.position += frameMovement;
+										foreach (WorldTile t in fallingItems) this.tileObjectModels[t].transform.position += frameMovement;
+									}
 								}
-								else
-								{
-									movement += frameMovement;
-									foreach (Robot r in fallingRobots) this.robotModels[r].transform.position += frameMovement;
-									foreach (WorldTile t in fallingItems) this.tileObjectModels[t].transform.position += frameMovement;
-								}
+								this.EndMovement(Vector2Int.down, fallingRobots, fallingItems);
 							}
-							this.EndMovement(Vector2Int.down, fallingRobots, fallingItems);
-						}
 
-					} while (fallingItems.Count + fallingRobots.Count > 0);
-
+						} while (fallingItems.Count + fallingRobots.Count > 0);
+					}
 					this.RemoveDestroyed(ref i);
 				}
 			}
@@ -434,6 +465,7 @@ public class GameController : MonoBehaviour
 		Game.current.status = Game.Status.Played;
 		Game.current.executionResult.done = true;
 		Game.current.executionResult.success = Game.current.executionResult.allObjectivesReached;
+		Game.current.robotsDisablingGravity.Clear();
 		if (Game.current.executionResult.success)
 		{
 			AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Success"));
@@ -464,6 +496,10 @@ public class GameController : MonoBehaviour
 				ModelManager.DestroyModel(this.robotModels[destroyedRobot]);
 				this.robotModels.Remove(destroyedRobot);
 				Game.current.executionResult.lostRobots++;
+				if (Game.current.robotsDisablingGravity.Contains(destroyedRobot))
+				{
+					Game.current.robotsDisablingGravity.Remove(destroyedRobot);
+				}
 			}
 			if (Game.current.turnDestroyedRobots.Count > 0)
 			{
@@ -504,6 +540,13 @@ public class GameController : MonoBehaviour
 		foreach (Robot r in movingRobots)
 		{
 			r.positionInLevel = r.positionInLevel + direction;
+			if (r.stickEnabled)
+			{
+				Tuple<List<WorldTile>, Robot> stickTo = this.GetTileContent(r.positionInLevel + Vector2Int.up);
+				r.stickRobot = stickTo.Item2;
+				r.stickTiles.Clear();
+				r.stickTiles.AddRange(stickTo.Item1);
+			}
 		}
 		foreach (Robot r in movingRobots)
 		{
@@ -549,9 +592,8 @@ public class GameController : MonoBehaviour
 	{
 		movingRobots = new List<Robot> { robot };
 		movingTileObjects = new List<WorldTile>();
-		bool movable = true;
 		bool keepCheckingMovable = true;
-		Vector2Int lastTileMoving = new Vector2Int(robot.xInLevel, robot.yInLevel);
+		Vector2Int lastTileMoving = robot.positionInLevel;
 		while (keepCheckingMovable)
 		{
 			lastTileMoving += direction;
@@ -564,8 +606,7 @@ public class GameController : MonoBehaviour
 			{
 				if (nextTileContent.Item1.Any(t => t.type.obstacleType == WorldTileType.ObstacleType.Fixed))
 				{
-					movable = false;
-					keepCheckingMovable = false;
+					return false;
 				}
 				else
 				{
@@ -574,11 +615,10 @@ public class GameController : MonoBehaviour
 			}
 			else
 			{
-				movable = true;
 				keepCheckingMovable = false;
 			}
 		}
-		return movable;
+		return true;
 	}
 
 	private Programmation.Operation EvalRobotOperation(Robot robot)

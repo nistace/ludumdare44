@@ -22,6 +22,9 @@ public class Game
 	public float bulletSpeed { get; } = 8;// tiles/second
 	public float maintenanceCost => this.ownedRobots.Sum(t => t.maintenanceCost);
 
+	public readonly HashSet<Robot> robotsDisablingGravity = new HashSet<Robot>();
+	public bool gravityEnabled => this.robotsDisablingGravity.Count == 0;
+
 	/// <summary>Currennt or latest exection result</summary>
 	public ExecutionResult executionResult { get; set; }
 	public bool somethingHappenedThisTurn { get; set; }

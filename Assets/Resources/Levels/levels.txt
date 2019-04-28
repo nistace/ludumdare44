@@ -18,5 +18,8 @@ lvl ladder
 help Great! You know everything now. Keep reaching flags, avoid maintenance costs and someday you may be rich!
 help Good luck.
 lvl wakeup
+lvl pass
 lvl shortcut
 lvl elevator
+lvl peek
+lvl fall

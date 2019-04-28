@@ -16,6 +16,9 @@ public class Robot
 	public int xInLevel => this.positionInLevel.x;
 	public int yInLevel => this.positionInLevel.y;
 
+	public bool stickEnabled;
+	public List<WorldTile> stickTiles { get; } = new List<WorldTile>();
+	public Robot stickRobot;
 
 	public List<Programmation.Instruction> instructions { get; } = new List<Programmation.Instruction>();
 	public Programmation.Operation elseOperation { get; set; } = Programmation.Operation.moveRight;
