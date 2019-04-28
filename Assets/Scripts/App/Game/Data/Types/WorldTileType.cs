@@ -17,6 +17,7 @@ public class WorldTileType : AbstractType
 	public GameObject prefab;
 	public string help;
 	public ObstacleType obstacleType;
+	public bool gravity;
 	public bool robotSpawn;
 
 	public int health;

@@ -26,6 +26,7 @@ public class ExecutionButtonsPanel : AbstractUIMonoBehaviour
 	public Button nextLevelButton;
 	public Button gameOverButton;
 	public Button gameFinishedButton;
+	public TMPro.TMP_Text selectOneRobotText;
 
 	private void Start()
 	{
@@ -40,8 +41,8 @@ public class ExecutionButtonsPanel : AbstractUIMonoBehaviour
 	{
 		if (Game.current != null && Game.current.world != null)
 		{
-			this.executeButton.gameObject.SetActive(Game.current.status == Game.Status.Preparing);
-			this.executeButton.interactable = Game.current.status == Game.Status.Preparing && Game.current.world.robotsInWorld.Count > 0;
+			this.selectOneRobotText.gameObject.SetActive(Game.current.status == Game.Status.Preparing && Game.current.world.robotsInWorld.Count == 0);
+			this.executeButton.gameObject.SetActive(Game.current.status == Game.Status.Preparing && Game.current.world.robotsInWorld.Count > 0);
 
 			this.pauseButton.gameObject.SetActive(Game.current.status == Game.Status.Playing);
 			this.pauseButtonImage.sprite = GameTime.speed == this.pauseSpeed ? App.instance.tabActiveSprite : App.instance.defaultTabSprite;

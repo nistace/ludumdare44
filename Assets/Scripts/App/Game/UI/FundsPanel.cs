@@ -17,7 +17,7 @@ public class FundsPanel : AbstractUIMonoBehaviour
 
 	public void Refresh(float diff)
 	{
-		this.fundsText.text = Game.current.funds.ToString("0.00");
+		this.fundsText.text = "$" + Game.current.funds.ToString("0.00");
 		this.fundsText.color = Game.current.funds > 0 ? this.positiveColor : this.negativeColor;
 	}
 

@@ -72,12 +72,13 @@ public static class GameFactory
 	{
 		World world = new World
 		{
-			tiles = new WorldTile[mapTexture.width, mapTexture.height]
+			tiles = new List<WorldTile>[mapTexture.width, mapTexture.height]
 		};
 		for (int i = 0; i < mapTexture.width; ++i)
 		{
 			for (int j = 0; j < mapTexture.height; ++j)
 			{
+				world.tiles[i, j] = new List<WorldTile>();
 				Color mapPixelColor = mapTexture.GetPixel(i, j);
 				if (mapPixelColor.a > 0)
 				{
@@ -85,7 +86,7 @@ public static class GameFactory
 					if (type == null) Debug.LogWarning("Found a pixel " + mapPixelColor + " but that color was not linked to a tile");
 					else
 					{
-						world.tiles[i, j] = new WorldTile { type = type, worldPosition = new Vector2Int(i, j) };
+						world.tiles[i, j].Add(new WorldTile { type = type, worldPosition = new Vector2Int(i, j) });
 					}
 				}
 			}

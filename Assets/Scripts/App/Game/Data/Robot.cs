@@ -15,7 +15,6 @@ public class Robot
 	public Vector2Int positionInLevel { get; set; }
 	public int xInLevel => this.positionInLevel.x;
 	public int yInLevel => this.positionInLevel.y;
-	public int orderInLevel { get; set; } = 0;
 
 
 	public List<Programmation.Instruction> instructions { get; } = new List<Programmation.Instruction>();

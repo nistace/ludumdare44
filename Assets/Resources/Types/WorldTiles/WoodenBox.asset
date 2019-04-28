@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bfc8b871ca656bf419a8714478eff870, type: 3}
-  m_Name: Spawn
+  m_Name: WoodenBox
   m_EditorClassIdentifier: 
-  parserColor: {r: 1, g: 1, b: 1, a: 1}
-  prefab: {fileID: 5978234770656128221, guid: 7949e0786e2c0c24ebcce60ce23fa721, type: 3}
-  help: 'Spawn position: select a robot and click here to assign it to the next execution'
-  obstacleType: 1
+  parserColor: {r: 0.6, g: 0.3254902, b: 0.28235295, a: 1}
+  prefab: {fileID: 5765060253114987231, guid: e9cd8f6a88427424c8bb33c033ed255c, type: 3}
+  help: 'Wooden box: you cannot move though it but you can push it or destroy it'
+  obstacleType: 2
   gravity: 1
-  robotSpawn: 1
-  health: 0
+  robotSpawn: 0
+  health: 20
   reward: 0
   objective: 0

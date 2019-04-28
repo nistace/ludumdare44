@@ -37,9 +37,33 @@ public class GameController : MonoBehaviour
 		}
 	}
 
+	internal void DeleteRobotProgrammationOption(Robot robot, Programmation.Instruction instruction)
+	{
+		robot.instructions.Remove(instruction);
+		this.OnRobotSpawnChanged();
+	}
+
 	public void Start()
 	{
 		this.LoadCurrentLevel();
+	}
+
+	internal void SetRobotProgrammationDirection(Programmation.Instruction instruction, Programmation.ConditionDirection direction)
+	{
+		instruction.conditionDirection = direction;
+		this.OnRobotSpawnChanged();
+	}
+
+	internal void SetRobotProgrammationType(Programmation.Instruction instruction, Programmation.ConditionType type)
+	{
+		instruction.conditionType = type;
+		this.OnRobotSpawnChanged();
+	}
+
+	internal void SetRobotProgrammationOperation(Programmation.Instruction instruction, Programmation.Operation type)
+	{
+		instruction.operation = type;
+		this.OnRobotSpawnChanged();
 	}
 
 	public void LoadNextLevel()
@@ -47,6 +71,7 @@ public class GameController : MonoBehaviour
 		this.currentLevel++;
 		this.LoadCurrentLevel();
 	}
+
 
 	public void LoadCurrentLevel()
 	{
@@ -64,13 +89,15 @@ public class GameController : MonoBehaviour
 		{
 			for (int j = 0; j < Game.current.world.tiles.GetLength(1); ++j)
 			{
-				WorldTile tile = Game.current.world.tiles[i, j];
-				if (tile != null)
+				foreach (WorldTile tile in Game.current.world.tiles[i, j])
 				{
-					WorldTileModel model = ModelManager.CreateModel(tile);
-					this.tileObjectModels.Add(tile, model);
-					model.transform.position = new Vector2(i, j);
-					if (tile.type.robotSpawn) tile.active = true;
+					if (tile != null)
+					{
+						WorldTileModel model = ModelManager.CreateModel(tile);
+						this.tileObjectModels.Add(tile, model);
+						model.transform.position = new Vector2(i, j);
+						if (tile.type.robotSpawn) tile.active = true;
+					}
 				}
 			}
 		}
@@ -81,11 +108,18 @@ public class GameController : MonoBehaviour
 		this.SetHelpMessage(null);
 	}
 
+	internal void SetRobotProgrammationOrder(Robot robot, int i)
+	{
+		Game.current.world.robotsInWorld.Remove(robot);
+		Game.current.world.robotsInWorld.Insert(i, robot);
+		this.OnRobotSpawnChanged();
+	}
+
 	internal void PlaceRobot()
 	{
 		if (this.selectedRobot != null && this.hoverTile)
 		{
-			WorldTile tile = Game.current.world.tiles[this.hoverTileCoordinates.x, this.hoverTileCoordinates.y];
+			WorldTile tile = Game.current.world.tiles[this.hoverTileCoordinates.x, this.hoverTileCoordinates.y].SingleOrDefault(t => t.type.robotSpawn);
 			if (tile != null && tile.type.robotSpawn)
 			{
 				Robot previousRobot = Game.current.world.robotsInWorld.SingleOrDefault(t => t.positionInLevel == tile.worldPosition);
@@ -96,7 +130,7 @@ public class GameController : MonoBehaviour
 				RobotModel model = ModelManager.CreateModel(this.selectedRobot);
 				model.transform.position = new Vector2(tile.worldPosition.x, tile.worldPosition.y);
 				this.robotModels.Add(this.selectedRobot, model);
-				Game.current.world.tiles[this.selectedRobot.xInLevel, this.selectedRobot.yInLevel].active = true;
+				Game.current.world.tiles[this.selectedRobot.xInLevel, this.selectedRobot.yInLevel].Single(t => t.type.robotSpawn).active = true;
 				tile.active = false;
 				this.SelectRobot(null);
 				this.OnRobotSpawnChanged();
@@ -107,7 +141,7 @@ public class GameController : MonoBehaviour
 	public void RemoveRobotSpawn(Robot robot)
 	{
 		ModelManager.DestroyModel(this.robotModels[robot]);
-		Game.current.world.tiles[robot.xInLevel, robot.yInLevel].active = true;
+		Game.current.world.tiles[robot.xInLevel, robot.yInLevel].Single(t => t.type.robotSpawn).active = true;
 		robot.inLevel = false;
 		Game.current.world.robotsInWorld.Remove(robot);
 		this.robotModels.Remove(robot);
@@ -138,7 +172,7 @@ public class GameController : MonoBehaviour
 			if (Game.current != null && Game.current.world != null && this.hoverTileCoordinates.x >= 0 && this.hoverTileCoordinates.x < Game.current.world.width
 				&& this.hoverTileCoordinates.y >= 0 && this.hoverTileCoordinates.y < Game.current.world.height)
 			{
-				this.SetHelpMessage(Game.current.world.tiles[this.hoverTileCoordinates.x, this.hoverTileCoordinates.y]?.type.help);
+				this.SetHelpMessage(Game.current.world.tiles[this.hoverTileCoordinates.x, this.hoverTileCoordinates.y].FirstOrDefault()?.type.help);
 			}
 			else
 			{
@@ -167,6 +201,19 @@ public class GameController : MonoBehaviour
 		this.selectedRobot = null;
 		this.OnSelectedRobotChanged();
 	}
+
+	internal void AddRobotProgrammationOption(Robot robot)
+	{
+		robot.instructions.Add(new Programmation.Instruction());
+		this.OnRobotSpawnChanged();
+	}
+
+	internal void SetRobotOtherwiseOperation(Robot robot, Programmation.Operation operation)
+	{
+		robot.elseOperation = operation;
+		this.OnRobotSpawnChanged();
+	}
+
 
 	public void SetHelpMessage(string helpMessage)
 	{
@@ -246,7 +293,54 @@ public class GameController : MonoBehaviour
 
 				}
 
-				//yield return this.ExecuteGravity();
+				// Gravity
+				List<WorldTile> fallingItems = new List<WorldTile>();
+				List<Robot> fallingRobots = new List<Robot>();
+				do
+				{
+					fallingItems.Clear();
+					fallingRobots.Clear();
+					for (int j = 0; j < Game.current.world.width; ++j)
+					{
+						for (int k = 0; k < Game.current.world.height; ++k)
+						{
+							if (Game.current.world.tiles[j, k].Count > 0)
+							{
+								if (k == 0 ||
+									(!Game.current.world.tiles[j, k - 1].Any(t => t.type.obstacleType == WorldTileType.ObstacleType.Fixed || t.type.obstacleType == WorldTileType.ObstacleType.Push && !fallingItems.Contains(t))
+									&& !Game.current.world.robotsInWorld.Any(t => t.xInLevel == j && t.yInLevel == k - 1 && !fallingRobots.Contains(t))))
+								{
+									fallingItems.AddRange(Game.current.world.tiles[j, k].Where(t => t.type.gravity));
+									fallingRobots.AddRange(Game.current.world.robotsInWorld.Where(t => t.xInLevel == j && t.yInLevel == k - 1));
+								}
+							}
+						}
+					}
+					if (fallingItems.Count > 0 || fallingRobots.Count > 0)
+					{
+						Game.current.somethingHappenedThisTurn = true;
+						bool movementEnded = false;
+						Vector3 movement = Vector2.zero;
+						Vector3 movementSpeedVector = Vector3.down * Game.current.movementSpeed;
+						while (!movementEnded)
+						{
+							yield return null;
+							Vector3 frameMovement = GameTime.deltaTime * movementSpeedVector;
+							if ((movement + frameMovement).sqrMagnitude > 1)
+							{
+								movementEnded = true;
+							}
+							else
+							{
+								movement += frameMovement;
+								foreach (Robot r in fallingRobots) this.robotModels[r].transform.position += frameMovement;
+								foreach (WorldTile t in fallingItems) this.tileObjectModels[t].transform.position += frameMovement;
+							}
+						}
+						this.EndMovement(Vector2Int.down, fallingRobots, fallingItems);
+					}
+
+				} while (fallingItems.Count + fallingRobots.Count > 0);
 			}
 			foreach (Robot robot in Game.current.turnsDestroyedRobots)
 			{
@@ -275,25 +369,25 @@ public class GameController : MonoBehaviour
 		foreach (Robot r in movingRobots)
 		{
 			r.positionInLevel = r.positionInLevel + direction;
-			WorldTile itemOnTile = this.GetTileContent(r.positionInLevel).Item1;
-			if (itemOnTile != null && itemOnTile.type.reward > 0 && itemOnTile.type.objective == WorldTileType.Objective.Reach)
+			List<WorldTile> itemsOnTile = this.GetTileContent(r.positionInLevel).Item1;
+			foreach (WorldTile tile in itemsOnTile.Where(t => t.type.reward > 0 && t.type.objective == WorldTileType.Objective.Reach).ToList())
 			{
-				Game.current.AddFunds(itemOnTile.type.reward);
-				Game.current.executionResult.earnedAmount += itemOnTile.type.reward;
+				Game.current.AddFunds(tile.type.reward);
+				Game.current.executionResult.earnedAmount += tile.type.reward;
 				Game.current.remainingObjectives--;
-				Game.current.world.tiles[itemOnTile.worldPosition.x, itemOnTile.worldPosition.y] = null;
-				ModelManager.DestroyModel(this.tileObjectModels[itemOnTile]);
-				this.tileObjectModels.Remove(itemOnTile);
+				Game.current.world.tiles[tile.worldPosition.x, tile.worldPosition.y].Remove(tile);
+				ModelManager.DestroyModel(this.tileObjectModels[tile]);
+				this.tileObjectModels.Remove(tile);
 			}
 			this.robotModels[r].transform.position = new Vector3(r.positionInLevel.x, r.positionInLevel.y, 0);
 		}
 		foreach (WorldTile t in movingTileObjects)
 		{
-			Game.current.world.tiles[t.worldPosition.x, t.worldPosition.y] = null;
+			Game.current.world.tiles[t.worldPosition.x, t.worldPosition.y].Remove(t);
 			t.worldPosition += direction;
 			if (t.worldPosition.x >= 0 && t.worldPosition.x < Game.current.world.width && t.worldPosition.y >= 0 && t.worldPosition.y < Game.current.world.height)
 			{
-				Game.current.world.tiles[t.worldPosition.x, t.worldPosition.y] = t;
+				Game.current.world.tiles[t.worldPosition.x, t.worldPosition.y].Add(t);
 			}
 			this.tileObjectModels[t].transform.position = new Vector3(t.worldPosition.x, t.worldPosition.y, 0);
 		}
@@ -309,21 +403,21 @@ public class GameController : MonoBehaviour
 		while (keepCheckingMovable)
 		{
 			lastTileMoving += direction;
-			Tuple<WorldTile, Robot> nextTileContent = this.GetTileContent(lastTileMoving);
+			Tuple<List<WorldTile>, Robot> nextTileContent = this.GetTileContent(lastTileMoving);
 			if (nextTileContent.Item2 != null)
 			{
 				movingRobots.Add(nextTileContent.Item2);
 			}
-			else if (nextTileContent.Item1 != null && nextTileContent.Item1.type.obstacleType != WorldTileType.ObstacleType.WalkThrough)
+			else if (nextTileContent.Item1.Any(t => t.type.obstacleType != WorldTileType.ObstacleType.WalkThrough))
 			{
-				if (nextTileContent.Item1.type.obstacleType == WorldTileType.ObstacleType.Push)
-				{
-					movingTileObjects.Add(nextTileContent.Item1);
-				}
-				else
+				if (nextTileContent.Item1.Any(t => t.type.obstacleType == WorldTileType.ObstacleType.Fixed))
 				{
 					movable = false;
 					keepCheckingMovable = false;
+				}
+				else
+				{
+					movingTileObjects.AddRange(nextTileContent.Item1.Where(t => t.type.obstacleType == WorldTileType.ObstacleType.Push));
 				}
 			}
 			else
@@ -339,12 +433,12 @@ public class GameController : MonoBehaviour
 	{
 		foreach (Programmation.Instruction instruction in robot.instructions)
 		{
-			Tuple<WorldTile, Robot> tileContent = this.GetDirectionTileContent(robot.xInLevel, robot.yInLevel, instruction.conditionDirection);
+			Tuple<List<WorldTile>, Robot> tileContent = this.GetDirectionTileContent(robot.xInLevel, robot.yInLevel, instruction.conditionDirection);
 			bool conditionMet = false;
 			switch (instruction.conditionType)
 			{
-				case Programmation.ConditionType.empty: conditionMet = tileContent.Item1 == null && tileContent.Item2 == null; break;
-				case Programmation.ConditionType.obstacle: conditionMet = tileContent.Item1 != null; break;
+				case Programmation.ConditionType.empty: conditionMet = tileContent.Item1.Count == 0 && tileContent.Item2 == null; break;
+				case Programmation.ConditionType.obstacle: conditionMet = tileContent.Item1.Count > 0; break;
 				case Programmation.ConditionType.robot: conditionMet = tileContent.Item2 != null; break;
 			}
 			if (conditionMet) return instruction.operation;
@@ -353,7 +447,7 @@ public class GameController : MonoBehaviour
 
 	}
 
-	private Tuple<WorldTile, Robot> GetDirectionTileContent(int srcX, int srcY, Programmation.ConditionDirection dir)
+	private Tuple<List<WorldTile>, Robot> GetDirectionTileContent(int srcX, int srcY, Programmation.ConditionDirection dir)
 	{
 		switch (dir)
 		{
@@ -367,14 +461,14 @@ public class GameController : MonoBehaviour
 			case Programmation.ConditionDirection.right: return GetTileContent(new Vector2Int(srcX + 1, srcY));
 			default: Debug.LogError("GetDirectionTileContent Not implemented: " + dir.ToString()); break;
 		}
-		return new Tuple<WorldTile, Robot>(null, null);
+		return new Tuple<List<WorldTile>, Robot>(new List<WorldTile>(), null);
 	}
 
-	private Tuple<WorldTile, Robot> GetTileContent(Vector2Int coordinates)
+	private Tuple<List<WorldTile>, Robot> GetTileContent(Vector2Int coordinates)
 	{
 		if (coordinates.x < 0 || coordinates.x >= Game.current.world.width || coordinates.y < 0 || coordinates.y >= Game.current.world.height)
-			return new Tuple<WorldTile, Robot>(null, null);
-		return new Tuple<WorldTile, Robot>(Game.current.world.tiles[coordinates.x, coordinates.y], Game.current.world.robotsInWorld.SingleOrDefault(t => t.xInLevel == coordinates.x && t.yInLevel == coordinates.y));
+			return new Tuple<List<WorldTile>, Robot>(new List<WorldTile>(), null);
+		return new Tuple<List<WorldTile>, Robot>(Game.current.world.tiles[coordinates.x, coordinates.y], Game.current.world.robotsInWorld.SingleOrDefault(t => t.xInLevel == coordinates.x && t.yInLevel == coordinates.y));
 	}
 
 	#endregion
