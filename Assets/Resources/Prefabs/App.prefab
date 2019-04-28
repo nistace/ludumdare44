@@ -46,10 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   theme: Your life is currency
   difficultyFunds:
-  - 1000
-  - 500
-  - 200
-  difficultyLevel: 0
+  - 1500
+  - 800
+  - 300
+  difficultyLevel: 1
+  helpEnabled: 1
   cursorSprite: {fileID: 2800000, guid: 73215022a370899468bd962425f3dbf6, type: 3}
   defaultButtonSprite: {fileID: -8816031292267695619, guid: f3fdb29b8fa70384ba7211f624c49b61,
     type: 3}

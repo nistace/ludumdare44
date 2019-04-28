@@ -8,8 +8,6 @@ public class GameController : MonoBehaviour
 {
 	public static GameController instance { get; private set; }
 
-	public int currentLevel = -1;
-
 	public bool hoverTile { get; private set; }
 	public Vector2Int hoverTileCoordinates { get; private set; }
 	public Robot selectedRobot { get; private set; }
@@ -18,12 +16,18 @@ public class GameController : MonoBehaviour
 	public Dictionary<Robot, RobotModel> robotModels { get; } = new Dictionary<Robot, RobotModel>();
 	public Dictionary<WorldTile, WorldTileModel> tileObjectModels { get; } = new Dictionary<WorldTile, WorldTileModel>();
 
+
+	public string[] levels;
+	public string[] levelsHelpMessage;
+	public int levelIndex = 0;
+	public bool firstTimeLevel = true;
+
 	public event Action OnHoverTileChanged = delegate { };
 	public event Action OnSelectedRobotChanged = delegate { };
 	public event Action OnHelpMessageChanged = delegate { };
 	public event Action OnRobotSpawnChanged = delegate { };
 	public event Action OnWorldChanged = delegate { };
-
+	public event Action<string> OnLevelHelp = delegate { };
 	public event Action OnGameStatusChanged = delegate { };
 
 	public void Awake()
@@ -33,8 +37,10 @@ public class GameController : MonoBehaviour
 		else
 		{
 			this.SetHelpMessage("Hello!");
+			ResourcesManager.LoadLevelsData(out this.levels, out this.levelsHelpMessage);
 			GameFactory.Init();
 			Game.current = GameFactory.CreateGame();
+			Game.current.funds = App.instance.difficultyFunds[App.instance.difficultyLevel];
 			Game.current.AddPurchasables(GameFactory.CreateRandomRobots(Game.current.keepCountItemsInPurchaseList));
 			Game.current.OnFundsChanged += this.PlayFundsChangedSound;
 		}
@@ -98,10 +104,10 @@ public class GameController : MonoBehaviour
 
 	public void LoadNextLevel()
 	{
-		this.currentLevel++;
+		this.levelIndex++;
+		this.firstTimeLevel = true;
 		this.LoadCurrentLevel();
 	}
-
 
 	public void LoadCurrentLevel()
 	{
@@ -110,11 +116,11 @@ public class GameController : MonoBehaviour
 
 	private IEnumerator LoadLevel()
 	{
-		this.SetHelpMessage("Loading level " + this.currentLevel);
+		this.SetHelpMessage("Loading level " + this.levelIndex);
 		yield return null;
 		this.ClearLevel();
 		yield return null;
-		Game.current.world = GameFactory.ParseWorld(ResourcesManager.LoadLevelTexture(this.currentLevel));
+		Game.current.world = GameFactory.ParseWorld(ResourcesManager.LoadLevelTexture(this.levels[this.levelIndex]));
 		for (int i = 0; i < Game.current.world.tiles.GetLength(0); ++i)
 		{
 			for (int j = 0; j < Game.current.world.tiles.GetLength(1); ++j)
@@ -136,6 +142,11 @@ public class GameController : MonoBehaviour
 		this.OnWorldChanged();
 		this.OnGameStatusChanged();
 		this.SetHelpMessage(null);
+		if (this.firstTimeLevel && App.instance.helpEnabled && !string.IsNullOrEmpty(this.levelsHelpMessage[this.levelIndex]))
+		{
+			this.OnLevelHelp(this.levelsHelpMessage[this.levelIndex]);
+		}
+		this.firstTimeLevel = false;
 	}
 
 	internal void SetRobotProgrammationOrder(Robot robot, int i)
@@ -153,7 +164,7 @@ public class GameController : MonoBehaviour
 			if (tile != null && tile.type.robotSpawn)
 			{
 				Robot previousRobot = Game.current.world.robotsInWorld.SingleOrDefault(t => t.positionInLevel == tile.worldPosition);
-				if (previousRobot != null) this.RemoveRobotSpawn(previousRobot);
+				if (previousRobot != null) this.RemoveRobotSpawn(previousRobot, false);
 				this.selectedRobot.inLevel = true;
 				this.selectedRobot.positionInLevel = tile.worldPosition;
 				Game.current.world.robotsInWorld.Add(this.selectedRobot);
@@ -162,19 +173,21 @@ public class GameController : MonoBehaviour
 				this.robotModels.Add(this.selectedRobot, model);
 				Game.current.world.tiles[this.selectedRobot.xInLevel, this.selectedRobot.yInLevel].Single(t => t.type.robotSpawn).active = true;
 				tile.active = false;
+				AudioManager.instance.PlaySfx("Spawn");
 				this.SelectRobot(null);
 				this.OnRobotSpawnChanged();
 			}
 		}
 	}
 
-	public void RemoveRobotSpawn(Robot robot)
+	public void RemoveRobotSpawn(Robot robot, bool playSound = true)
 	{
 		ModelManager.DestroyModel(this.robotModels[robot]);
 		Game.current.world.tiles[robot.xInLevel, robot.yInLevel].Single(t => t.type.robotSpawn).active = true;
 		robot.inLevel = false;
 		Game.current.world.robotsInWorld.Remove(robot);
 		this.robotModels.Remove(robot);
+		if (playSound) AudioManager.instance.PlaySfx("Unspawn");
 		this.OnRobotSpawnChanged();
 	}
 
@@ -281,13 +294,50 @@ public class GameController : MonoBehaviour
 				if (!Game.current.turnDestroyedRobots.Contains(robot))
 				{
 					Programmation.Operation robotOperation = this.EvalRobotOperation(robot);
-					if (robotOperation == Programmation.Operation.nothing)
-					{
-
-					}
+					if (robotOperation == Programmation.Operation.nothing) { }
 					else if (robotOperation == Programmation.Operation.special)
 					{
+						switch (robot.type.specialAbility)
+						{
+							case RobotType.SpecialAbility.shoot:
+							{
+								Vector2Int direction = Vector2Int.right;
+								Vector2Int nextPosition = robot.positionInLevel + direction;
+								GameObject bulletModel = ModelManager.CreateBullet();
+								Vector3 exactPosition = new Vector3(robot.positionInLevel.x, robot.positionInLevel.y, 0);
+								Vector3 movementSpeedVector = new Vector3(direction.x * Game.current.bulletSpeed, direction.y * Game.current.bulletSpeed, 0);
+								bulletModel.transform.position = exactPosition;
+								bool targetReached = false;
+								float tileDistanceTravelled = 0;
+								Tuple<List<WorldTile>, Robot> tileContent = GetTileContent(nextPosition);
+								AudioManager.instance.PlaySfx("Shoot");
+								while (!targetReached)
+								{
+									yield return null;
+									tileDistanceTravelled += (movementSpeedVector * GameTime.deltaTime).magnitude;
+									exactPosition += movementSpeedVector * GameTime.deltaTime;
 
+									while (!targetReached && tileDistanceTravelled >= 1)
+									{
+										if (tileContent.Item1.Any(t => t.type.obstacleType != WorldTileType.ObstacleType.WalkThrough) || tileContent.Item2 != null || nextPosition.x < 0 || nextPosition.x >= Game.current.world.width || nextPosition.y < 0 || nextPosition.y >= Game.current.world.height)
+										{
+											targetReached = true;
+										}
+										else
+										{
+											nextPosition += direction;
+											tileContent = GetTileContent(nextPosition);
+										}
+										tileDistanceTravelled--;
+									}
+									bulletModel.transform.position = exactPosition;
+								}
+								ModelManager.DestroyBullet(bulletModel);
+								foreach (WorldTile destroyed in tileContent.Item1.Where(t => t.type.health > 0)) Game.current.turnDestroyedItems.Add(destroyed);
+								if (tileContent.Item2 != null) Game.current.turnDestroyedRobots.Add(tileContent.Item2);
+							};
+							break;
+						}
 					}
 					else
 					{
@@ -324,6 +374,8 @@ public class GameController : MonoBehaviour
 						}
 
 					}
+
+					this.RemoveDestroyed(ref i);
 
 					// Gravity
 					List<WorldTile> fallingItems = new List<WorldTile>();
@@ -373,29 +425,10 @@ public class GameController : MonoBehaviour
 						}
 
 					} while (fallingItems.Count + fallingRobots.Count > 0);
+
+					this.RemoveDestroyed(ref i);
 				}
 			}
-			foreach (Robot robot in Game.current.turnDestroyedRobots)
-			{
-				Game.current.ownedRobots.Remove(robot);
-				Game.current.world.robotsInWorld.Remove(robot);
-				ModelManager.DestroyModel(this.robotModels[robot]);
-				this.robotModels.Remove(robot);
-				Game.current.executionResult.lostRobots++;
-			}
-			if (Game.current.turnDestroyedRobots.Count > 0)
-			{
-				Game.current.turnDestroyedRobots.Clear();
-				AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Explosion"));
-			}
-			foreach (WorldTile tile in Game.current.turnDestroyedItems)
-			{
-				if (tile.worldPosition.x >= 0 && tile.worldPosition.x < Game.current.world.width && tile.worldPosition.y >= 0 && tile.worldPosition.y < Game.current.world.height)
-					Game.current.world.tiles[tile.worldPosition.x, tile.worldPosition.y].Remove(tile);
-				ModelManager.DestroyModel(this.tileObjectModels[tile]);
-				this.tileObjectModels.Remove(tile);
-			}
-			Game.current.turnDestroyedItems.Clear();
 			turnsWithNoEffect = Game.current.somethingHappenedThisTurn ? 0 : turnsWithNoEffect + 1;
 		}
 
@@ -420,9 +453,55 @@ public class GameController : MonoBehaviour
 		this.OnGameStatusChanged();
 	}
 
+	private void RemoveDestroyed(ref int currentRobotIndex)
+	{
+		bool playedSoundAlready = false;
+		if (Game.current.turnDestroyedRobots.Count > 0)
+		{
+			foreach (Robot destroyedRobot in Game.current.turnDestroyedRobots)
+			{
+				Game.current.ownedRobots.Remove(destroyedRobot);
+				if (Game.current.world.robotsInWorld.IndexOf(destroyedRobot) <= currentRobotIndex) currentRobotIndex--;
+				Game.current.world.robotsInWorld.Remove(destroyedRobot);
+				ModelManager.DestroyModel(this.robotModels[destroyedRobot]);
+				this.robotModels.Remove(destroyedRobot);
+				Game.current.executionResult.lostRobots++;
+			}
+			if (Game.current.turnDestroyedRobots.Count > 0)
+			{
+				Game.current.turnDestroyedRobots.Clear();
+				if (!playedSoundAlready)
+				{
+					AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Explosion"));
+					playedSoundAlready = true;
+				}
+				Game.current.somethingHappenedThisTurn = true;
+			}
+		}
+		if (Game.current.turnDestroyedItems.Count > 0)
+		{
+			foreach (WorldTile tile in Game.current.turnDestroyedItems)
+			{
+				if (tile.worldPosition.x >= 0 && tile.worldPosition.x < Game.current.world.width && tile.worldPosition.y >= 0 && tile.worldPosition.y < Game.current.world.height)
+					Game.current.world.tiles[tile.worldPosition.x, tile.worldPosition.y].Remove(tile);
+				ModelManager.DestroyModel(this.tileObjectModels[tile]);
+				this.tileObjectModels.Remove(tile);
+			}
+			if (Game.current.turnDestroyedItems.Count > 0)
+			{
+				Game.current.turnDestroyedItems.Clear();
+				if (!playedSoundAlready)
+				{
+					AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Destruction"));
+					playedSoundAlready = true;
+				}
+				Game.current.somethingHappenedThisTurn = true;
+			}
+		}
+	}
+
 	private void EndMovement(Vector2Int direction, IEnumerable<Robot> movingRobots, IEnumerable<WorldTile> movingTileObjects)
 	{
-
 		foreach (Robot r in movingRobots)
 		{
 			r.positionInLevel = r.positionInLevel + direction;

@@ -7,6 +7,8 @@ public class ModelManager : MonoBehaviour
 {
 	private static ModelManager instance { get; set; }
 
+	public GameObject bulletPrefab;
+
 	private static readonly Dictionary<GameObject, Queue<GameObject>> pool = new Dictionary<GameObject, Queue<GameObject>>();
 
 	public void Awake()
@@ -22,6 +24,23 @@ public class ModelManager : MonoBehaviour
 	public static WorldTileModel CreateModel(WorldTile worldTile)
 	{
 		return GetPooledOrNew<WorldTileModel, WorldTile>(worldTile.type.prefab, worldTile);
+	}
+
+	public static GameObject CreateBullet()
+	{
+		if (!pool.ContainsKey(instance.bulletPrefab)) pool.Add(instance.bulletPrefab, new Queue<GameObject>());
+		GameObject bullet;
+		if (pool[instance.bulletPrefab].Count > 0) bullet = pool[instance.bulletPrefab].Dequeue();
+		else bullet = Instantiate(instance.bulletPrefab, Vector3.zero, Quaternion.identity, instance.transform);
+		bullet.SetActive(true);
+		return bullet;
+	}
+
+	public static void DestroyBullet(GameObject model)
+	{
+		if (!pool.ContainsKey(instance.bulletPrefab)) pool.Add(instance.bulletPrefab, new Queue<GameObject>());
+		pool[instance.bulletPrefab].Enqueue(model);
+		model.SetActive(false);
 	}
 
 	public static RobotModel CreateModel(Robot robot)

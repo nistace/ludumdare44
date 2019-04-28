@@ -10,7 +10,8 @@ public class App : MonoBehaviour
 	public string theme;
 
 	public float[] difficultyFunds = new float[] { 1000, 500, 200 };
-	public int difficultyLevel = 0;
+	public int difficultyLevel = 1;
+	public bool helpEnabled = true;
 
 	public Texture2D cursorSprite;
 
@@ -20,7 +21,7 @@ public class App : MonoBehaviour
 	public Sprite tabActiveSprite;
 
 	public event Action<AsyncOperation> OnSceneChange = delegate { };
-	public event Action OnDifficultyChanged = delegate { };
+	public event Action OnParametersChanged = delegate { };
 
 	private void Awake()
 	{
@@ -49,7 +50,12 @@ public class App : MonoBehaviour
 	public void SetDifficulty(int level)
 	{
 		this.difficultyLevel = level;
-		this.OnDifficultyChanged();
+		this.OnParametersChanged();
 	}
 
+	public void SetHelpEnabled(bool enabled)
+	{
+		this.helpEnabled = enabled;
+		this.OnParametersChanged();
+	}
 }

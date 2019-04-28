@@ -19,6 +19,7 @@ public class Game
 	public List<Robot> purchasableRobots { get; } = new List<Robot>();
 	public float movementSpeed { get; } = 2;// tiles/second
 	public float fallSpeed { get; } = 4;// tiles/second
+	public float bulletSpeed { get; } = 8;// tiles/second
 
 	/// <summary>Currennt or latest exection result</summary>
 	public ExecutionResult executionResult { get; set; }

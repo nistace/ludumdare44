@@ -59,9 +59,9 @@ public class ExecutionButtonsPanel : AbstractUIMonoBehaviour
 			this.abortButton.gameObject.SetActive(Game.current.status == Game.Status.Playing);
 
 			this.retryButton.gameObject.SetActive(Game.current.status == Game.Status.Played && !Game.current.executionResult.success && Game.current.funds >= 0);
-			this.nextLevelButton.gameObject.SetActive(Game.current.status == Game.Status.Played && Game.current.executionResult.success && Game.current.funds >= 0 && GameController.instance.currentLevel + 1 < ResourcesManager.CountLevels());
+			this.nextLevelButton.gameObject.SetActive(Game.current.status == Game.Status.Played && Game.current.executionResult.success && Game.current.funds >= 0 && GameController.instance.levelIndex + 1 < GameController.instance.levels.Length);
 			this.gameOverButton.gameObject.SetActive(Game.current.status == Game.Status.Played && Game.current.funds < 0);
-			this.gameFinishedButton.gameObject.SetActive(Game.current.status == Game.Status.Played && Game.current.funds >= 0 && Game.current.executionResult.success && GameController.instance.currentLevel + 1 >= ResourcesManager.CountLevels());
+			this.gameFinishedButton.gameObject.SetActive(Game.current.status == Game.Status.Played && Game.current.funds >= 0 && Game.current.executionResult.success && GameController.instance.levelIndex + 1 >= GameController.instance.levels.Length);
 		}
 	}
 
@@ -102,7 +102,14 @@ public class ExecutionButtonsPanel : AbstractUIMonoBehaviour
 
 	public void HelpGameOver()
 	{
-		GameController.instance.SetHelpMessage("You are in the red. You couldn't manage your money, and all your machines are now broken. World War III is inevitable.");
+		if (Game.current.funds >= 0)
+		{
+			GameController.instance.SetHelpMessage("That's it! You made it though all the levels! And you managed to have a positive balance in the end. Impressive! Thanks for playing!");
+		}
+		else
+		{
+			GameController.instance.SetHelpMessage("You are in the red. You couldn't manage your money, and all your machines are now broken. World War III is inevitable.");
+		}
 	}
 
 	public void NextLevel()

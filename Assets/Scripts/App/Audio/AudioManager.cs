@@ -53,6 +53,7 @@ public class AudioManager : MonoBehaviour
 	}
 
 	public void PlayButtonSfx() { this.PlaySfx(this.buttonClip); }
+	public void PlaySfx(string clipName) { this.PlaySfx(ResourcesManager.LoadAudioClip(clipName)); }
 	public void PlaySfx(AudioClip clip)
 	{
 		AudioSource src = this.availableSfx.Count > 0 ? this.availableSfx.Dequeue() : this.CreateNewSfxSource();
