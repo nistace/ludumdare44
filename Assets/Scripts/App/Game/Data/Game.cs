@@ -20,6 +20,7 @@ public class Game
 	public float movementSpeed { get; } = 2;// tiles/second
 	public float fallSpeed { get; } = 4;// tiles/second
 	public float bulletSpeed { get; } = 8;// tiles/second
+	public float maintenanceCost => this.ownedRobots.Sum(t => t.maintenanceCost);
 
 	/// <summary>Currennt or latest exection result</summary>
 	public ExecutionResult executionResult { get; set; }
@@ -28,8 +29,6 @@ public class Game
 	public HashSet<WorldTile> turnDestroyedItems { get; } = new HashSet<WorldTile>();
 
 	public Status status { get; set; }
-	public int initialObjectives { get; set; }
-	public int remainingObjectives { get; set; }
 
 	/// <summary>Funds changed, gives the difference</summary>
 	public event Action<float> OnFundsChanged = delegate { };

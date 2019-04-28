@@ -279,16 +279,14 @@ public class GameController : MonoBehaviour
 	public IEnumerator Play()
 	{
 		Game.current.status = Game.Status.Playing;
-		Game.current.initialObjectives = Game.current.world.rewardCount;
-		Game.current.remainingObjectives = Game.current.world.rewardCount;
 		int turnsWithNoEffect = 0;
-		Game.current.executionResult = new ExecutionResult { earnedAmount = 0, lostRobots = 0, success = false, done = false };
+		Game.current.executionResult = new ExecutionResult { earnedAmount = 0, lostRobots = 0, success = false, done = false, objectives = Game.current.world.rewardCount, objectivesReached = 0 };
 		this.OnGameStatusChanged();
 		yield return null;
-		while (Game.current.status == Game.Status.Playing && turnsWithNoEffect < 3 && Game.current.remainingObjectives > 0)
+		while (Game.current.status == Game.Status.Playing && turnsWithNoEffect < 3 && !Game.current.executionResult.allObjectivesReached)
 		{
 			Game.current.somethingHappenedThisTurn = false;
-			for (int i = 0; Game.current.status == Game.Status.Playing && Game.current.remainingObjectives > 0 && i < Game.current.world.robotsInWorld.Count; ++i)
+			for (int i = 0; Game.current.status == Game.Status.Playing && !Game.current.executionResult.allObjectivesReached && i < Game.current.world.robotsInWorld.Count; ++i)
 			{
 				Robot robot = Game.current.world.robotsInWorld[i];
 				if (!Game.current.turnDestroyedRobots.Contains(robot))
@@ -435,7 +433,7 @@ public class GameController : MonoBehaviour
 		yield return new WaitForSeconds(.4f);
 		Game.current.status = Game.Status.Played;
 		Game.current.executionResult.done = true;
-		Game.current.executionResult.success = Game.current.remainingObjectives == 0;
+		Game.current.executionResult.success = Game.current.executionResult.allObjectivesReached;
 		if (Game.current.executionResult.success)
 		{
 			AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Success"));
@@ -449,7 +447,7 @@ public class GameController : MonoBehaviour
 		{
 			r.maintenanceCost += r.useCost;
 		}
-		Game.current.AddFunds(-Game.current.ownedRobots.Sum(t => t.maintenanceCost));
+		Game.current.AddFunds(-Game.current.maintenanceCost);
 		this.OnGameStatusChanged();
 	}
 
@@ -476,6 +474,7 @@ public class GameController : MonoBehaviour
 					playedSoundAlready = true;
 				}
 				Game.current.somethingHappenedThisTurn = true;
+
 			}
 		}
 		if (Game.current.turnDestroyedItems.Count > 0)
@@ -513,7 +512,7 @@ public class GameController : MonoBehaviour
 			{
 				Game.current.AddFunds(tile.type.reward);
 				Game.current.executionResult.earnedAmount += tile.type.reward;
-				Game.current.remainingObjectives--;
+				Game.current.executionResult.objectivesReached++;
 				Game.current.world.tiles[tile.worldPosition.x, tile.worldPosition.y].Remove(tile);
 				ModelManager.DestroyModel(this.tileObjectModels[tile]);
 				this.tileObjectModels.Remove(tile);

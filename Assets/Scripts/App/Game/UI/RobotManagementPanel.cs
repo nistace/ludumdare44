@@ -13,6 +13,7 @@ public class RobotManagementPanel : AbstractUIMonoBehaviour
 	public MyRobotsPanel myRobotsPanel;
 	public PurchasePanel purchasePanel;
 
+	public DebriefPanel debriefPanel;
 	public ExecutionButtonsPanel executionButtonsPanel;
 
 	private GameObject selectedPanel;
@@ -55,6 +56,7 @@ public class RobotManagementPanel : AbstractUIMonoBehaviour
 		this.purchasePanel.tabImage.sprite = this.selectedPanel == this.purchasePanel.gameObject ? App.instance.tabActiveSprite : App.instance.defaultTabSprite;
 		this.purchasePanel.tabButton.interactable = this.selectedPanel != this.purchasePanel.gameObject;
 		this.executionButtonsPanel.gameObject.SetActive(Game.current.status != Game.Status.Preparing || this.selectedPanel != this.purchasePanel.gameObject);
+		this.debriefPanel.gameObject.SetActive(Game.current.status != Game.Status.Preparing);
 		if (Game.current.status != Game.Status.Preparing)
 		{
 			this.myRobotsPanel.HideAllProgrammation();

@@ -26,6 +26,14 @@ public class MyRobotsPanel : AbstractUIMonoBehaviour
 		GameController.instance.OnRobotSpawnChanged += this.RefreshList;
 	}
 
+	public void HideAllProgrammation()
+	{
+		foreach (MyRobotsBox box in this.boxes.Values)
+		{
+			box.HideProgrammation();
+		}
+	}
+
 	private void RefreshList()
 	{
 		foreach (Robot toRemove in this.boxes.Keys.Where(t => !Game.current.ownedRobots.Contains(t)).ToList())

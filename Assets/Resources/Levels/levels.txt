@@ -10,12 +10,13 @@ help Careful now, the robot AI must be reviewed to solve this level!
 lvl push
 help You should know that flags are affected by gravity too!
 lvl nopush
-help Did you know that robots have a special ability? You can't push the boxes this time. Maybe have a look at the shop, see if you can purchase a robot able to destroy stuff?
+help Did you know that some robots have a special ability? You can't push the boxes this time. Maybe have a look at the shop, see if you can purchase a robot able to destroy stuff?
 lvl drawbridge
 lvl dusttodust
 help Ok, your robot is now very expensive to maintain. It's sad but your bank account is more important. We'll bury its carcass. Promise. And see that you now have the possibility to spawn two robots!
-lvl wakeup
+lvl ladder
 help Great! You know everything now. Keep reaching flags, avoid maintenance costs and someday you may be rich!
 help Good luck.
+lvl wakeup
 lvl shortcut
 lvl elevator

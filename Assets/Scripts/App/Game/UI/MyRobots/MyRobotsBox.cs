@@ -167,6 +167,12 @@ public class MyRobotsBox : AbstractUIMonoBehaviour
 		AudioManager.instance.PlayButtonSfx();
 	}
 
+	public void HideProgrammation()
+	{
+		this.showProgrammation = false;
+		this.Refresh();
+	}
+
 	private void ToggleProgrammation()
 	{
 		this.showProgrammation = !this.showProgrammation;
