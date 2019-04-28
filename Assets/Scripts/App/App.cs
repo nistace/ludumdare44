@@ -9,6 +9,9 @@ public class App : MonoBehaviour
 
 	public string theme;
 
+	public float[] difficultyFunds = new float[] { 1000, 500, 200 };
+	public int difficultyLevel = 0;
+
 	public Texture2D cursorSprite;
 
 	public Sprite defaultButtonSprite;
@@ -16,8 +19,8 @@ public class App : MonoBehaviour
 	public Sprite defaultTabSprite;
 	public Sprite tabActiveSprite;
 
-
 	public event Action<AsyncOperation> OnSceneChange = delegate { };
+	public event Action OnDifficultyChanged = delegate { };
 
 	private void Awake()
 	{
@@ -41,6 +44,12 @@ public class App : MonoBehaviour
 		ModelManager.DestroyAllModels<WorldTileModel, WorldTile>();
 		ModelManager.DestroyAllModels<RobotModel, Robot>();
 		this.OnSceneChange(SceneManager.LoadSceneAsync("Main"));
+	}
+
+	public void SetDifficulty(int level)
+	{
+		this.difficultyLevel = level;
+		this.OnDifficultyChanged();
 	}
 
 }

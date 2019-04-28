@@ -38,6 +38,8 @@ public class ResourcesManager : MonoBehaviour
 	public static readonly Dictionary<Programmation.ConditionType, Sprite> conditionTypeSprites = new Dictionary<Programmation.ConditionType, Sprite>();
 	public static readonly Dictionary<Programmation.Operation, Sprite> operationSprites = new Dictionary<Programmation.Operation, Sprite>();
 
+	public static readonly Dictionary<string, AudioClip> audioClips = new Dictionary<string, AudioClip>();
+
 	private void Awake()
 	{
 		instance = this;
@@ -83,5 +85,12 @@ public class ResourcesManager : MonoBehaviour
 	public static Texture2D LoadLevelTexture(int index)
 	{
 		return LoadLevelTextures()[index];
+	}
+
+	public static AudioClip LoadAudioClip(string name)
+	{
+		if (!audioClips.ContainsKey(name))
+			audioClips.Add(name, Resources.Load<AudioClip>("Audio/" + name));
+		return audioClips[name];
 	}
 }

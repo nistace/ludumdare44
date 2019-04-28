@@ -30,6 +30,7 @@ public class SelectSomethingPanel<E> : MonoBehaviour
 	{
 		this.callback(option);
 		this.gameObject.SetActive(false);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void Update()

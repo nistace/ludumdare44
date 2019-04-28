@@ -25,6 +25,7 @@ public class RobotManagementPanel : AbstractUIMonoBehaviour
 
 		this.myRobotsPanel.gameObject.SetActive(true);
 		this.purchasePanel.gameObject.SetActive(false);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void SelectPurchaseTab()
@@ -36,6 +37,7 @@ public class RobotManagementPanel : AbstractUIMonoBehaviour
 
 		this.purchasePanel.gameObject.SetActive(true);
 		this.myRobotsPanel.gameObject.SetActive(false);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 

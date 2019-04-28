@@ -14,6 +14,7 @@ public class SelectTypePanel : SelectSomethingPanel<Programmation.ConditionType>
 		this.gameObject.SetActive(false);
 	}
 
+	public void SelectAnything() { this.SelectOption(Programmation.ConditionType.anything); }
 	public void SelectEmpty() { this.SelectOption(Programmation.ConditionType.empty); }
 	public void SelectObstacle() { this.SelectOption(Programmation.ConditionType.obstacle); }
 	public void SelectRobot() { this.SelectOption(Programmation.ConditionType.robot); }

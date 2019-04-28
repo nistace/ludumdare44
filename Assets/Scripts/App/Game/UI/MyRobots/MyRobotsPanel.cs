@@ -40,6 +40,14 @@ public class MyRobotsPanel : AbstractUIMonoBehaviour
 		{
 			box.Refresh();
 		}
+		if (Game.current?.world?.robotsInWorld != null)
+		{
+			List<Robot> orderedRobots = Game.current.ownedRobots.OrderBy(t => t.inLevel ? Game.current.world.robotsInWorld.IndexOf(t) : Game.current.world.robotsInWorld.Count).ToList();
+			for (int i = 0; i < orderedRobots.Count; ++i)
+			{
+				this.boxes[orderedRobots[i]].transform.SetSiblingIndex(i);
+			}
+		}
 	}
 
 	private void RefreshSelected()

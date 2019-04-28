@@ -96,10 +96,12 @@ public class MyRobotsBox : AbstractUIMonoBehaviour
 			else
 			{
 				button = Instantiate(this.orderButtonPrefab, this.orderContainerTransform);
-				button.button.onClick.AddListener(delegate { this.SetOrder(i); });
 				button.text.text = i.ToString();
+				button.orderIndex = i;
 				this.orderButtons.Add(button);
+				button.button.onClick.AddListener(button.SetOrder);
 			}
+			button.robot = this.robot;
 			button.gameObject.SetActive(true);
 			button.image.sprite = order == i ? App.instance.buttonPressedSprite : App.instance.defaultButtonSprite;
 			button.button.interactable = order != i;
@@ -136,11 +138,6 @@ public class MyRobotsBox : AbstractUIMonoBehaviour
 	}
 
 
-	private void SetOrder(int i)
-	{
-		GameController.instance.SetRobotProgrammationOrder(this.robot, i);
-	}
-
 	public void SetPlacementEnabled(bool enabled)
 	{
 		this.placeRobotButton.gameObject.SetActive(enabled);
@@ -161,17 +158,20 @@ public class MyRobotsBox : AbstractUIMonoBehaviour
 		{
 			GameController.instance.SelectRobot(this.robot);
 		}
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void AddProgrammationOption()
 	{
 		GameController.instance.AddRobotProgrammationOption(this.robot);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	private void ToggleProgrammation()
 	{
 		this.showProgrammation = !this.showProgrammation;
 		this.Refresh();
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void HelpUseCost()
@@ -210,6 +210,7 @@ public class MyRobotsBox : AbstractUIMonoBehaviour
 	public void SelectOtherwiseOperation()
 	{
 		SelectOperationPanel.instance.Open(this.SelectOtherwiseOperation, this.robot.type.helpDisplayAbility);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	private void SelectOtherwiseOperation(Programmation.Operation operation)

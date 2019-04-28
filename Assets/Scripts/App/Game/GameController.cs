@@ -23,6 +23,7 @@ public class GameController : MonoBehaviour
 	public event Action OnHelpMessageChanged = delegate { };
 	public event Action OnRobotSpawnChanged = delegate { };
 	public event Action OnWorldChanged = delegate { };
+
 	public event Action OnGameStatusChanged = delegate { };
 
 	public void Awake()
@@ -34,6 +35,20 @@ public class GameController : MonoBehaviour
 			this.SetHelpMessage("Hello!");
 			GameFactory.Init();
 			Game.current = GameFactory.CreateGame();
+			Game.current.AddPurchasables(GameFactory.CreateRandomRobots(Game.current.keepCountItemsInPurchaseList));
+			Game.current.OnFundsChanged += this.PlayFundsChangedSound;
+		}
+	}
+
+	private void PlayFundsChangedSound(float diff)
+	{
+		if (diff > 0)
+		{
+			AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Positive"));
+		}
+		else
+		{
+			AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Pay"));
 		}
 	}
 
@@ -59,6 +74,21 @@ public class GameController : MonoBehaviour
 		instruction.conditionType = type;
 		this.OnRobotSpawnChanged();
 	}
+
+	internal void Purchase(Robot robot)
+	{
+		Game.current.PurchaseRobot(robot);
+		Game.current.AddPurchasables(GameFactory.CreateRandomRobots(Game.current.keepCountItemsInPurchaseList - Game.current.purchasableRobots.Count));
+		this.SetHelpMessage("You are now the happy owner of " + robot.name + "!");
+	}
+
+	internal void RerollPurchassableRobots()
+	{
+		Game.current.ClearPurchaseList();
+		Game.current.AddPurchasables(GameFactory.CreateRandomRobots(Game.current.keepCountItemsInPurchaseList - Game.current.purchasableRobots.Count));
+		this.SetHelpMessage("New robots for sale!");
+	}
+
 
 	internal void SetRobotProgrammationOperation(Programmation.Instruction instruction, Programmation.Operation type)
 	{
@@ -353,7 +383,11 @@ public class GameController : MonoBehaviour
 				this.robotModels.Remove(robot);
 				Game.current.executionResult.lostRobots++;
 			}
-			Game.current.turnDestroyedRobots.Clear();
+			if (Game.current.turnDestroyedRobots.Count > 0)
+			{
+				Game.current.turnDestroyedRobots.Clear();
+				AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Explosion"));
+			}
 			foreach (WorldTile tile in Game.current.turnDestroyedItems)
 			{
 				if (tile.worldPosition.x >= 0 && tile.worldPosition.x < Game.current.world.width && tile.worldPosition.y >= 0 && tile.worldPosition.y < Game.current.world.height)
@@ -364,9 +398,20 @@ public class GameController : MonoBehaviour
 			Game.current.turnDestroyedItems.Clear();
 			turnsWithNoEffect = Game.current.somethingHappenedThisTurn ? 0 : turnsWithNoEffect + 1;
 		}
+
+		yield return new WaitForSeconds(.4f);
 		Game.current.status = Game.Status.Played;
 		Game.current.executionResult.done = true;
 		Game.current.executionResult.success = Game.current.remainingObjectives == 0;
+		if (Game.current.executionResult.success)
+		{
+			AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Success"));
+		}
+		else
+		{
+			AudioManager.instance.PlaySfx(ResourcesManager.LoadAudioClip("Lose"));
+		}
+		yield return new WaitForSeconds(.4f);
 		foreach (Robot r in Game.current.world.robotsInWorld)
 		{
 			r.maintenanceCost += r.useCost;
@@ -381,6 +426,9 @@ public class GameController : MonoBehaviour
 		foreach (Robot r in movingRobots)
 		{
 			r.positionInLevel = r.positionInLevel + direction;
+		}
+		foreach (Robot r in movingRobots)
+		{
 			List<WorldTile> itemsOnTile = this.GetTileContent(r.positionInLevel).Item1;
 			foreach (WorldTile tile in itemsOnTile.Where(t => t.type.reward > 0 && t.type.objective == WorldTileType.Objective.Reach).ToList())
 			{

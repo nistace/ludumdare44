@@ -51,7 +51,8 @@ public static class GameFactory
 		Robot robot = new Robot
 		{
 			type = type,
-			maintenanceCost = 50,
+			maintenanceCost = type.initialMaintenanceCost,
+			
 			color = new Color(UnityEngine.Random.Range(.5f, 1), UnityEngine.Random.Range(.5f, 1), UnityEngine.Random.Range(0, .5f)),
 			name = CreateNewRobotName()
 		};

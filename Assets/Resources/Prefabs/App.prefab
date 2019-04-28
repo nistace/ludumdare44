@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2436034827518595679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2436034827518595677}
+  - component: {fileID: 2436034827518595678}
+  - component: {fileID: 2436034827518595651}
+  m_Layer: 0
+  m_Name: App
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2436034827518595677
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2436034827518595679}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2436034827518595678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2436034827518595679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ccb27810b71032428db9c28a7908191, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  theme: Your life is currency
+  difficultyFunds:
+  - 1000
+  - 500
+  - 200
+  difficultyLevel: 0
+  cursorSprite: {fileID: 2800000, guid: 73215022a370899468bd962425f3dbf6, type: 3}
+  defaultButtonSprite: {fileID: -8816031292267695619, guid: f3fdb29b8fa70384ba7211f624c49b61,
+    type: 3}
+  buttonPressedSprite: {fileID: 7263181891274304025, guid: f3fdb29b8fa70384ba7211f624c49b61,
+    type: 3}
+  defaultTabSprite: {fileID: -8816031292267695619, guid: f3fdb29b8fa70384ba7211f624c49b61,
+    type: 3}
+  tabActiveSprite: {fileID: 7263181891274304025, guid: f3fdb29b8fa70384ba7211f624c49b61,
+    type: 3}
+--- !u!114 &2436034827518595651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2436034827518595679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 498fa685e20c8c046beb5ab2514b0307, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicClip: {fileID: 8300000, guid: 29368a3b316212044a915291e6e332e7, type: 3}
+  buttonClip: {fileID: 8300000, guid: 98189d420e474e04ca5704c3a5990c7f, type: 3}
+  defaultMusicVolume: 0.4
+  defaultSfxVolume: 0.6

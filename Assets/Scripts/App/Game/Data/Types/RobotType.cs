@@ -11,6 +11,23 @@ public class RobotType : AbstractType
 	public GameObject prefab;
 	public Sprite icon;
 	public SpecialAbility specialAbility;
+	public float price;
+	public float initialMaintenanceCost;
+	public float useCostPercentage;
+
+
+	public string specialAbilityName
+	{
+		get
+		{
+			switch (this.specialAbility)
+			{
+				case SpecialAbility.platform: return "Platform";
+				case SpecialAbility.shoot: return "Shoot";
+			}
+			return null;
+		}
+	}
 
 	public string helpDisplayAbility
 	{

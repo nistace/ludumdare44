@@ -108,41 +108,49 @@ public class ExecutionButtonsPanel : AbstractUIMonoBehaviour
 	public void NextLevel()
 	{
 		GameController.instance.LoadNextLevel();
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void Retry()
 	{
 		GameController.instance.LoadCurrentLevel();
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void GameOver()
 	{
 		App.instance.LoadMainScene();
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void SetPauseSpeed()
 	{
 		GameTime.instance.SetSpeed(this.pauseSpeed);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void SetNormalSpeed()
 	{
 		GameTime.instance.SetSpeed(this.normalSpeed);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void SetFastSpeed()
 	{
 		GameTime.instance.SetSpeed(this.fastSpeed);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void Execute()
 	{
 		GameController.instance.StartExecution();
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void StopAsSoonAsPossible()
 	{
 		Game.current.status = Game.Status.Finishing;
 		GameTime.instance.SetSpeed(this.fastSpeed);
+		AudioManager.instance.PlayButtonSfx();
 	}
 }

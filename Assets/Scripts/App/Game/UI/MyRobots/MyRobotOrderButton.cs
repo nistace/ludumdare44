@@ -8,7 +8,15 @@ public class MyRobotOrderButton : AbstractUIMonoBehaviour
 	public Button button;
 	public Image image;
 	public TMPro.TMP_Text text;
+	public Robot robot;
 	public int orderIndex;
+
+	public void SetOrder()
+	{
+		GameController.instance.SetRobotProgrammationOrder(this.robot, this.orderIndex);
+		AudioManager.instance.PlayButtonSfx();
+	}
+
 
 	public void Help()
 	{

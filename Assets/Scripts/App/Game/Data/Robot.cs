@@ -9,7 +9,7 @@ public class Robot
 	public Color color { get; set; }
 	public RobotType type { get; set; }
 	public float maintenanceCost { get; set; } = 50;
-	public float useCost => this.maintenanceCost * .12f;
+	public float useCost => this.maintenanceCost * this.type.useCostPercentage;
 
 	public bool inLevel { get; set; } = false;
 	public Vector2Int positionInLevel { get; set; }

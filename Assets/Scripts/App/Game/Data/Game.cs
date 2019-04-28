@@ -14,6 +14,7 @@ public class Game
 
 	public World world { get; set; }
 	public float funds { get; set; } = 1000;
+	public int keepCountItemsInPurchaseList { get; set; } = 4;
 	public List<Robot> ownedRobots { get; } = new List<Robot>();
 	public List<Robot> purchasableRobots { get; } = new List<Robot>();
 	public float movementSpeed { get; } = 2;// tiles/second
@@ -42,4 +43,24 @@ public class Game
 		this.OnFundsChanged(amount);
 	}
 
+	internal void PurchaseRobot(Robot robot)
+	{
+		this.purchasableRobots.Remove(robot);
+		this.ownedRobots.Add(robot);
+		this.AddFunds(-robot.type.price);
+		this.OnOwnedRobotListChanged();
+		this.OnPurchasableListChanged();
+	}
+
+	public void ClearPurchaseList()
+	{
+		this.purchasableRobots.Clear();
+		this.OnPurchasableListChanged();
+	}
+
+	public void AddPurchasables(Robot[] robots)
+	{
+		this.purchasableRobots.AddRange(robots);
+		this.OnPurchasableListChanged();
+	}
 }

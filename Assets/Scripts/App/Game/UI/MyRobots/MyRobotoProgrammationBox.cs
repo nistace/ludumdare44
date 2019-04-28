@@ -31,11 +31,13 @@ public class MyRobotoProgrammationBox : AbstractUIMonoBehaviour
 	public void Remove()
 	{
 		GameController.instance.DeleteRobotProgrammationOption(this.robot, this.instruction);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	public void SelectDirection()
 	{
 		SelectDirectionPanel.instance.Open(this.SelectDirection);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	private void SelectDirection(Programmation.ConditionDirection direction)
@@ -47,6 +49,7 @@ public class MyRobotoProgrammationBox : AbstractUIMonoBehaviour
 	public void SelectType()
 	{
 		SelectTypePanel.instance.Open(this.SelectType);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	private void SelectType(Programmation.ConditionType type)
@@ -58,6 +61,7 @@ public class MyRobotoProgrammationBox : AbstractUIMonoBehaviour
 	public void SelectOperation()
 	{
 		SelectOperationPanel.instance.Open(this.SelectOperation, this.robot.type.helpDisplayAbility);
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 	private void SelectOperation(Programmation.Operation type)
