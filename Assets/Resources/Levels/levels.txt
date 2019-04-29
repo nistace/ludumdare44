@@ -3,7 +3,8 @@ help Dear robot owner, welcome!
 help See below, it's your money. Your goal is to keep it, or better: get more. To earn money, you will use robots to reach the yellow flags in different levels. Careful though: robot maintenance costs increase very fast, and you cannot sell them. 
 help Let's start the first level! Your objective: reach the yellow flag.
 help You already received a robot. All you need to do is to spawn it in the level. Then click on the "Execute" button. The robot is ready to complete this task.
-help Click on "Start the level" to continue. (if you ever feel confused, hover the source of your troubles with your cursor and see the help appear at the top of the screen)
+help Click on "Start the level" to continue.
+help (if you ever feel confused, place your cursor over the source of your troubles and see the help at the top of the screen)
 lvl gravity
 help Unlike steel blocks, wooden boxes are affected by gravity. Use them to make your way to the flag.
 help Careful now, the robot AI must be reviewed to solve this level!
@@ -18,7 +19,7 @@ lvl ladder
 help Great! You know everything now. Keep reaching flags, avoid maintenance costs and someday you may be rich!
 help Good luck.
 lvl wakeup
-lvl pass
+lvl twosides
 lvl shortcut
 lvl elevator
 lvl peek

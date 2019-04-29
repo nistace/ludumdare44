@@ -35,6 +35,8 @@ public class RobotManagementPanel : AbstractUIMonoBehaviour
 		this.myRobotsPanel.gameObject.SetActive(false);
 		this.purchasePanel.gameObject.SetActive(false);
 		this.tabsPanel.gameObject.SetActive(false);
+		this.executionButtonsPanel.gameObject.SetActive(false);
+		this.debriefPanel.gameObject.SetActive(false);
 		this.levelHelpPanel.SetActive(true);
 		this.levelHelpText.text = helpText;
 	}
@@ -42,6 +44,7 @@ public class RobotManagementPanel : AbstractUIMonoBehaviour
 	public void CloseHelp()
 	{
 		this.Refresh();
+		AudioManager.instance.PlayButtonSfx();
 	}
 
 

@@ -17,6 +17,12 @@ public class GameTime : MonoBehaviour
 		if (instance != this) Destroy(this);
 	}
 
+	public void OnDestroy()
+	{
+		instance = null;
+		OnSpeedChanged = delegate { };
+	}
+
 	private void Update()
 	{
 		deltaTime = Time.deltaTime * speed;

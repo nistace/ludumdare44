@@ -46,6 +46,11 @@ public class GameController : MonoBehaviour
 		}
 	}
 
+	public void OnDestroy()
+	{
+		instance = null;
+	}
+
 	private void PlayFundsChangedSound(float diff)
 	{
 		if (diff > 0)

@@ -47,6 +47,13 @@ public class App : MonoBehaviour
 		this.OnSceneChange(SceneManager.LoadSceneAsync("Main"));
 	}
 
+	public void LoadThxScene()
+	{
+		ModelManager.DestroyAllModels<WorldTileModel, WorldTile>();
+		ModelManager.DestroyAllModels<RobotModel, Robot>();
+		this.OnSceneChange(SceneManager.LoadSceneAsync("Thx"));
+	}
+
 	public void SetDifficulty(int level)
 	{
 		this.difficultyLevel = level;

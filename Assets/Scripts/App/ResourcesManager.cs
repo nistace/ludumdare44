@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class ResourcesManager : MonoBehaviour
 {
 	public static ResourcesManager instance { get; set; }
+	private static bool loaded { get; set; }
 
 	public static Dictionary<Type, AbstractType[]> loadedTypes = new Dictionary<Type, AbstractType[]>();
 
@@ -42,26 +43,30 @@ public class ResourcesManager : MonoBehaviour
 	private void Awake()
 	{
 		instance = this;
-		directionSprites.Add(Programmation.ConditionDirection.left, this.directionLeft);
-		directionSprites.Add(Programmation.ConditionDirection.right, this.directionRight);
-		directionSprites.Add(Programmation.ConditionDirection.top, this.directionUp);
-		directionSprites.Add(Programmation.ConditionDirection.bottom, this.directionDown);
-		directionSprites.Add(Programmation.ConditionDirection.topleft, this.directionUpLeft);
-		directionSprites.Add(Programmation.ConditionDirection.topright, this.directionUpRight);
-		directionSprites.Add(Programmation.ConditionDirection.bottomleft, this.directionDownLeft);
-		directionSprites.Add(Programmation.ConditionDirection.bottomright, this.directionDownRight);
+		if (!loaded)
+		{
+			directionSprites.Add(Programmation.ConditionDirection.left, this.directionLeft);
+			directionSprites.Add(Programmation.ConditionDirection.right, this.directionRight);
+			directionSprites.Add(Programmation.ConditionDirection.top, this.directionUp);
+			directionSprites.Add(Programmation.ConditionDirection.bottom, this.directionDown);
+			directionSprites.Add(Programmation.ConditionDirection.topleft, this.directionUpLeft);
+			directionSprites.Add(Programmation.ConditionDirection.topright, this.directionUpRight);
+			directionSprites.Add(Programmation.ConditionDirection.bottomleft, this.directionDownLeft);
+			directionSprites.Add(Programmation.ConditionDirection.bottomright, this.directionDownRight);
 
-		conditionTypeSprites.Add(Programmation.ConditionType.empty, this.contentEmpty);
-		conditionTypeSprites.Add(Programmation.ConditionType.obstacle, this.contentObstacle);
-		conditionTypeSprites.Add(Programmation.ConditionType.robot, this.contentRobot);
-		conditionTypeSprites.Add(Programmation.ConditionType.anything, this.contentAnything);
+			conditionTypeSprites.Add(Programmation.ConditionType.empty, this.contentEmpty);
+			conditionTypeSprites.Add(Programmation.ConditionType.obstacle, this.contentObstacle);
+			conditionTypeSprites.Add(Programmation.ConditionType.robot, this.contentRobot);
+			conditionTypeSprites.Add(Programmation.ConditionType.anything, this.contentAnything);
 
-		operationSprites.Add(Programmation.Operation.moveBottom, this.actionDown);
-		operationSprites.Add(Programmation.Operation.moveLeft, this.actionLeft);
-		operationSprites.Add(Programmation.Operation.moveRight, this.actionRight);
-		operationSprites.Add(Programmation.Operation.moveTop, this.actionUp);
-		operationSprites.Add(Programmation.Operation.nothing, this.actionNothing);
-		operationSprites.Add(Programmation.Operation.special, this.actionSpecial);
+			operationSprites.Add(Programmation.Operation.moveBottom, this.actionDown);
+			operationSprites.Add(Programmation.Operation.moveLeft, this.actionLeft);
+			operationSprites.Add(Programmation.Operation.moveRight, this.actionRight);
+			operationSprites.Add(Programmation.Operation.moveTop, this.actionUp);
+			operationSprites.Add(Programmation.Operation.nothing, this.actionNothing);
+			operationSprites.Add(Programmation.Operation.special, this.actionSpecial);
+		}
+		loaded = true;
 	}
 
 	public static E[] LoadAllTypes<E>() where E : AbstractType

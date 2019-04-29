@@ -126,7 +126,7 @@ public class ExecutionButtonsPanel : AbstractUIMonoBehaviour
 
 	public void GameOver()
 	{
-		App.instance.LoadMainScene();
+		App.instance.LoadThxScene();
 		AudioManager.instance.PlayButtonSfx();
 	}
 
